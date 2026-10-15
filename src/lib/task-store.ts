@@ -150,10 +150,10 @@ export function setTask(task: AnyTask & { events: NonNullable<AnyTask["events"]>
 
 export async function deleteTask(taskId: string) {
     memStore.delete(taskId);
-    await Promise.all([
-        deletePersistedTask(taskId),
-        saveTasksToFile(buildSnapshot()),
-    ]);
+    // Join the same queue as pollers before deleting the database row, so an
+    // older queued snapshot cannot restore a task the owner just removed.
+    await saveTasks();
+    await deletePersistedTask(taskId);
 }
 
 export function pushEvent(taskId: string, event: NonNullable<AnyTask["events"]>[number]) {

@@ -50,5 +50,9 @@ Module._extensions['.ts'] = (mod, name) => mod._compile(ts.transpileModule(fs.re
     assert.equal(child.status, 0, child.stderr);
     assert(child.stdout.trim(), 'Hydration process returned no evidence');
     assert.equal(JSON.parse(child.stdout).pendingJobResumedWithSameId, true);
-    console.log(JSON.stringify({ concurrentAtomicHistory: true, processRestart: true, acceptedOperationPreserved: true, noProviderCalls: true }));
+    await Promise.all([store.saveTasks(), store.deleteTask('fixture-0'), store.saveTasks()]);
+    const afterDelete = JSON.parse(fs.readFileSync(path.join(directory, 'tasks_history.json'), 'utf8'));
+    assert.equal(afterDelete.length, 19);
+    assert(!afterDelete.some(task => task.task_id === 'fixture-0'));
+    console.log(JSON.stringify({ concurrentAtomicHistory: true, concurrentDeletion: true, processRestart: true, acceptedOperationPreserved: true, noProviderCalls: true }));
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => { if (!process.argv.includes('--hydrate')) fs.rmSync(directory, { recursive: true, force: true }); });
