@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "checked_on": "2026-10-16",
+  "source_only": true,
+  "runtime_changed": false,
+  "sources": [
+    {
+      "name": "higgsfield-skills",
+      "path": "third_party/higgsfield-skills",
+      "repository": "https://github.com/higgsfield-ai/skills",
+      "commit": "f83af0bc1d937c8119099a11f8ebbf5e6fb99819",
+      "source_url": "https://github.com/higgsfield-ai/skills/tree/f83af0bc1d937c8119099a11f8ebbf5e6fb99819",
+      "license": "MIT",
+      "license_file": "LICENSE",
+      "license_sha256": "9da656d6226936542be59478dbf775057dfdeade2629d35e0832108c2b7aecc0",
+      "copyright": "Copyright (c) 2026 Higgsfield AI",
+      "upstream_file_count": 129,
+      "skill_files": [
+        "higgsfield-brandkit/SKILL.md",
+        "higgsfield-generate/SKILL.md",
+        "higgsfield-marketplace-cards/SKILL.md",
+        "higgsfield-product-photoshoot/SKILL.md",
+        "higgsfield-soul-id/SKILL.md",
+        "higgsfield-video-explainer/SKILL.md",
+        "higgsfield-websites/SKILL.md",
+        "higgsfield-youtube-thumbnail/SKILL.md"
+      ],
+      "script_files": [
+        "higgsfield-brandkit/scripts/brandkit.py",
+        "higgsfield-brandkit/scripts/build_brandbook.py",
+        "higgsfield-brandkit/scripts/render_brandbook_pdf.py",
+        "higgsfield-websites/scripts/fbx2glb.py",
+        "higgsfield-websites/scripts/glb_inspect.py",
+        "higgsfield-websites/scripts/glb_merge_anims.py",
+        "higgsfield-websites/scripts/glb_patch.py",
+        "higgsfield-websites/scripts/merge_anim_glbs.py",
+        "higgsfield-websites/scripts/pipeline.py",
+        "higgsfield-websites/scripts/proc_anim_dragon.py",
+        "higgsfield-websites/scripts/proc_rig_dragon.py",
+        "higgsfield-websites/scripts/proc_weights.py",
+        "higgsfield-websites/scripts/rig_transfer.py",
+        "higgsfield-websites/scripts/seamless.py",
+        "scripts/update-check.sh"
+      ],
+      "categories": [
+        "generation",
+        "Soul identity training interface",
+        "product photoshoot",
+        "brand identity",
+        "marketplace imagery",
+        "website/game creation",
+        "narrated video explainer",
+        "thumbnail/cover"
+      ],
+      "service_dependencies": [
+        "Higgsfield authenticated CLI and hosted generation APIs",
+        "Named proprietary models and account credits",
+        "Some scripts use Python render/export libraries or Blender; dependencies not installed"
+      ],
+      "compatibility": "upstream-unadapted",
+      "non_autoload": true,
+      "installed_in_agent_skill_directories": false,
+      "scripts_executed": false,
+      "cli_binary_installed": false,
+      "mcp_server_registered": false,
+      "runtime_imported": false,
+      "account_data_included": false,
+      "notes": "Pinned source submodule only. Source availability does not mean its workflows are ported or runnable against Highfield. Preserve the complete upstream license and third-party notices on redistribution."
+    },
+    {
+      "name": "higgsfield-cli",
+      "path": "third_party/higgsfield-cli",
+      "repository": "https://github.com/higgsfield-ai/cli",
+      "commit": "dc7e2d2eac0b1fdad255de24d87552d1ba479037",
+      "source_url": "https://github.com/higgsfield-ai/cli/tree/dc7e2d2eac0b1fdad255de24d87552d1ba479037",
+      "license": "MIT",
+      "license_file": "LICENSE",
+      "license_sha256": "9da656d6226936542be59478dbf775057dfdeade2629d35e0832108c2b7aecc0",
+      "copyright": "Copyright (c) 2026 Higgsfield AI",
+      "upstream_file_count": 6,
+      "skill_files": [],
+      "script_files": [
+        "install.sh"
+      ],
+      "categories": [
+        "CLI installer",
+        "command/model/workflow documentation"
+      ],
+      "service_dependencies": [
+        "Separate released Higgsfield CLI binary, absent from this source tree",
+        "Higgsfield account authentication and remote service"
+      ],
+      "compatibility": "upstream-unadapted",
+      "non_autoload": true,
+      "installed_in_agent_skill_directories": false,
+      "scripts_executed": false,
+      "cli_binary_installed": false,
+      "mcp_server_registered": false,
+      "runtime_imported": false,
+      "account_data_included": false,
+      "notes": "Pinned source submodule only. Source availability does not mean its workflows are ported or runnable against Highfield. Preserve the complete upstream license and third-party notices on redistribution."
+    },
+    {
+      "name": "higgsfield-cursor-plugin",
+      "path": "third_party/higgsfield-cursor-plugin",
+      "repository": "https://github.com/higgsfield-ai/cursor-plugin",
+      "commit": "c9215059e409dc81c69ff0fe77ea2740c5fc6249",
+      "source_url": "https://github.com/higgsfield-ai/cursor-plugin/tree/c9215059e409dc81c69ff0fe77ea2740c5fc6249",
+      "license": "MIT",
+      "license_file": "LICENSE",
+      "license_sha256": "9da656d6226936542be59478dbf775057dfdeade2629d35e0832108c2b7aecc0",
+      "copyright": "Copyright (c) 2026 Higgsfield AI",
+      "upstream_file_count": 6,
+      "skill_files": [],
+      "script_files": [],
+      "categories": [
+        "Cursor plugin manifest",
+        "one /higgs routing command",
+        "hosted HTTP MCP client configuration"
+      ],
+      "service_dependencies": [
+        "Cursor plugin host",
+        "OAuth authentication to https://mcp.higgsfield.ai/mcp",
+        "Current upstream tools; referenced tool names may differ from this session"
+      ],
+      "compatibility": "upstream-unadapted",
+      "non_autoload": true,
+      "installed_in_agent_skill_directories": false,
+      "scripts_executed": false,
+      "cli_binary_installed": false,
+      "mcp_server_registered": false,
+      "runtime_imported": false,
+      "account_data_included": false,
+      "notes": "Pinned source submodule only. Source availability does not mean its workflows are ported or runnable against Highfield. Preserve the complete upstream license and third-party notices on redistribution."
+    }
+  ],
+  "not_imported": [
+    {
+      "repository": "https://github.com/higgsfield-ai/app-templates",
+      "commit": "2b6343a7f2cbe9f629aeb84e7fd98e7ad32a1af3",
+      "reason": "Public UI/template source; no root LICENSE or package license declaration verified. Not imported."
+    },
+    {
+      "repository": "https://github.com/higgsfield-ai/higgsfield-js",
+      "commit": "e3f274249962417e21f6566d4eecec6d8491d11c",
+      "reason": "Package declares MIT, but root LICENSE is absent at this revision. SDK contracts may be used independently; full notice verification required before source vendoring."
+    },
+    {
+      "repository": "https://github.com/higgsfield-ai/higgsfield-client",
+      "commit": "aefd1ca677929762b9f69a7a7ea530a4a695d6a8",
+      "license": "Apache-2.0",
+      "reason": "License verified. Not imported because the current Node application uses independently authored REST adapters; adding the Python SDK is unnecessary for that runtime."
+    }
+  ]
+}

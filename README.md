@@ -2,7 +2,9 @@
 
 Highfield is a self-hosted creative studio fork of [TechBeme/open-higgsfield](https://github.com/TechBeme/open-higgsfield). The repository keeps its original name and MIT license. The interface is independently authored from public product references; this project is unaffiliated with Higgsfield.
 
-We are extending this foundation into our own creative platform, starting with a complete project workflow that connects shot planning, media generation, Voicebox narration and export. See the [product direction and current implementation status](docs/highfield.md).
+We are extending this foundation into our own complete creative platform: studios, prompts/skills, MCP/API, UI controls, accounts, teams and administration. The [38-module build ledger](docs/highfield-scope.json) tracks the full scope; a complete project workflow connects shot planning, media generation, Voicebox narration and export as one delivery stage. See the [product direction, reusable sources and current implementation status](docs/highfield.md).
+
+Official MIT-licensed skills, CLI installer/docs and Cursor plugin sources are pinned as optional `third_party/` submodules. Fetch them with `git submodule update --init --recursive`; they remain source references pending adaptation, not automatically executable Highfield workflows. [Source provenance](docs/upstream-sources.json) records licenses and exact commits.
 
 The original 40 curated image/video models remain available. This fork adds a Highfield Explore interface, private provider settings, optional Higgsfield Genjutsu/Cinema adapters, OpenRouter media discovery, local engine discovery, a local shot planner, and a read-only MCP endpoint. Cloud providers require your own credentials and may charge for generation. Model access and pricing come from each provider.
 

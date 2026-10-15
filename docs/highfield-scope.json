@@ -1,0 +1,1101 @@
+{
+  "schema_version": 1,
+  "reviewed": "2026-10-16",
+  "objective": "Build our own complete Highfield creative platform from the existing open-higgsfield fork.",
+  "status_meaning": "All listed modules are in scope. State describes current coverage, not completion or a promise that proprietary engines are self-hosted.",
+  "source_policy": "Preserve licensed upstream source and provenance. Keep native upstream APIs optional; independently implement workflows and prompts that are unavailable as licensed source.",
+  "completion_rule": "A module is complete only when its UI, app service, authorization, compatible engine, durable outputs and acceptance checks are verified.",
+  "delivery_phases": [
+    {
+      "phase": 1,
+      "name": "Shared platform foundations",
+      "gate": "Account/workspace isolation, ownership migration, projects, provider services and durable jobs before enabling multiple users."
+    },
+    {
+      "phase": 2,
+      "name": "Creation and workflow foundation",
+      "gate": "Original prompt/skill runtime, full creation studios, our Cinema/Director workflow, audio/editor/export and authenticated MCP."
+    },
+    {
+      "phase": 3,
+      "name": "Advanced studios and administration",
+      "gate": "Genjutsu-style editing, Katana, Canvas, marketing/Ads, identities/avatars, 3D, localization and auditable usage."
+    },
+    {
+      "phase": 4,
+      "name": "Extended platform and integrations",
+      "gate": "Specialized studios, creative-app bridges, reference capture, code projects, sharing and learning content."
+    }
+  ],
+  "modules": [
+    {
+      "id": "HF-001",
+      "key": "ui",
+      "title": "Complete interface and button behavior",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 1,
+      "depends_on": [],
+      "current_evidence": [
+        "src/components/studio/StudioShell.tsx",
+        "src/components/highfield/"
+      ],
+      "deliverables": [
+        "Navigation and every studio screen, dialog, menu, picker and account control",
+        "Desktop/mobile layouts, keyboard access, themes and localization",
+        "Control inventory mapping each button to its action, permission, service and state"
+      ],
+      "acceptance": [
+        "Each visible control performs its documented action or explains a specific unavailable dependency",
+        "Test loading, empty, validation, success, failure and cancellation states",
+        "Check desktop and narrow mobile layouts; preserve navigation and saved state after refresh"
+      ]
+    },
+    {
+      "id": "HF-002",
+      "key": "accounts",
+      "title": "Accounts, authentication and sessions",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 1,
+      "depends_on": [],
+      "current_evidence": [
+        "src/proxy.ts currently handles locale only; authentication is external shared-owner ingress"
+      ],
+      "deliverables": [
+        "Owner bootstrap, login/logout, profile, password changes and recovery",
+        "Session expiry/revocation, sign-in protection and optional federated identity/MFA",
+        "Account disable/delete with ownership transfer and data export rules",
+        "Configured email verification and Google/Apple/Microsoft identity adapters with verified redirect and recovery flows"
+      ],
+      "acceptance": [
+        "Server authorizes every API and protected asset request",
+        "Password/recovery/session secrets never appear in logs, normal reads or the public repository",
+        "Disabling an account or revoking a session immediately removes access"
+      ]
+    },
+    {
+      "id": "HF-003",
+      "key": "workspaces",
+      "title": "Teams, workspaces and permissions",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 1,
+      "depends_on": [
+        "HF-002"
+      ],
+      "current_evidence": [
+        "src/types/index.ts and src/lib/task-store.ts have no workspace/actor ownership"
+      ],
+      "deliverables": [
+        "Workspace creation/switching, invitations and membership",
+        "Owner/admin/member/viewer permissions; separate private and shared projects",
+        "Workspace-scoped provider credentials, projects, jobs, assets, prompts and audit events",
+        "Organization groups, bulk member import/export and optional enterprise SSO/SAML with real provider setup"
+      ],
+      "acceptance": [
+        "Two workspaces cannot read, mutate, stream or download each other's records using guessed IDs",
+        "Background polling and MCP use the submitting workspace's credentials",
+        "Member changes and invite expiry/revocation are enforced server-side"
+      ]
+    },
+    {
+      "id": "HF-004",
+      "key": "administration",
+      "title": "Administration and account management",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 1,
+      "depends_on": [
+        "HF-002",
+        "HF-003"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "User, role, invitation, workspace and provider administration",
+        "Audit trail, operational settings and usage overview",
+        "Quota, retention, account recovery and ownership management"
+      ],
+      "acceptance": [
+        "Role restrictions apply to UI and direct API/MCP calls",
+        "Prevent removal of the final owner and record sensitive changes without secrets",
+        "Admin lists and searches are scoped and paginated"
+      ]
+    },
+    {
+      "id": "HF-005",
+      "key": "providers",
+      "title": "Models, providers and integration settings",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 1,
+      "depends_on": [
+        "HF-003"
+      ],
+      "current_evidence": [
+        "src/providers/",
+        "src/models/capabilities/",
+        "src/lib/provider-catalog.ts",
+        "src/lib/connections.ts"
+      ],
+      "deliverables": [
+        "Preserve existing model catalog and discover all supported provider capabilities",
+        "Separate planning, vision, image, video, audio, 3D and editing capabilities",
+        "Workspace connections, key rotation, health checks and explicit local/cloud routing"
+      ],
+      "acceptance": [
+        "Expose only parameters and media roles the selected endpoint accepts",
+        "Installed, loaded, configured and inference-verified are separate states",
+        "No silent cloud fallback or credentials in browser model payloads"
+      ]
+    },
+    {
+      "id": "HF-006",
+      "key": "jobs",
+      "title": "Generation jobs, queue, cost and recovery",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 1,
+      "depends_on": [
+        "HF-003",
+        "HF-005",
+        "HF-007"
+      ],
+      "current_evidence": [
+        "src/lib/generation-service.ts",
+        "src/lib/poller.ts",
+        "src/lib/task-store.ts",
+        "tests/task-store.cjs"
+      ],
+      "deliverables": [
+        "Durable workflow/job IDs, dependencies, revisions and worker queues",
+        "Quotes, cost limits, progress, cancel, explicit retry and reconciliation",
+        "Bounded concurrency, local-worker resource limits and output persistence"
+      ],
+      "acceptance": [
+        "Accepted provider IDs survive restart without duplicate submission",
+        "Uncertain submissions are reconciled before retry; cancellation reaches workers/providers when supported",
+        "Workspace isolation covers status/events/downloads and usage accounting"
+      ]
+    },
+    {
+      "id": "HF-007",
+      "key": "projects-assets",
+      "title": "Projects and asset library",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 1,
+      "depends_on": [
+        "HF-003"
+      ],
+      "current_evidence": [
+        "src/components/tasks/ResultsGrid.tsx",
+        "src/app/api/download/",
+        "src/lib/upload.ts"
+      ],
+      "deliverables": [
+        "Projects/folders, uploads, thumbnails, favorites, references and search",
+        "Versioned assets and provenance linking inputs, prompts, skills, models and outputs",
+        "Download/export, deletion, retention and explicit public/private sharing"
+      ],
+      "acceptance": [
+        "Every asset belongs to a workspace and has authorized access",
+        "Reusing media does not require an unrelated cloud upload service for local workflows",
+        "Restart and export preserve project references and editable metadata"
+      ]
+    },
+    {
+      "id": "HF-008",
+      "key": "prompts",
+      "title": "Prompt library and prompt engineering",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 2,
+      "depends_on": [
+        "HF-003",
+        "HF-007"
+      ],
+      "current_evidence": [
+        "Licensed prompt/procedure source in third_party/higgsfield-skills; no in-app prompt library yet"
+      ],
+      "deliverables": [
+        "Editable templates with variables, tags, languages and model compatibility",
+        "Versioning, favorites, import/export and project-local variations",
+        "Licensed source attribution and generated-prompt history"
+      ],
+      "acceptance": [
+        "Missing variables and unsupported inputs are validated before submission",
+        "Each job pins the exact prompt/template revision",
+        "Publicly sourced prompts retain provenance; private prompt text is not claimed to be recovered"
+      ]
+    },
+    {
+      "id": "HF-009",
+      "key": "skills",
+      "title": "Skills, recipes and workflow runtime",
+      "in_scope": true,
+      "state": "source_only",
+      "phase": 2,
+      "depends_on": [
+        "HF-006",
+        "HF-008"
+      ],
+      "current_evidence": [
+        "third_party/higgsfield-skills",
+        "docs/upstream-sources.json; imported source remains unadapted"
+      ],
+      "deliverables": [
+        "Pinned licensed upstream skill sources and independently authored Highfield workflows",
+        "Manifest with inputs, steps, tools, compatible engines, outputs and version",
+        "Skill browser, editing/import/export, run history and dependency preflight"
+      ],
+      "acceptance": [
+        "Imported upstream files are not automatically executable or native-compatible",
+        "Tools and script execution are constrained to declared workspace permissions and worker boundaries",
+        "A skill is runnable only when all required steps and engines are connected"
+      ]
+    },
+    {
+      "id": "HF-010",
+      "key": "effects-presets",
+      "title": "Effects and preset catalog",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 2,
+      "depends_on": [
+        "HF-005",
+        "HF-007",
+        "HF-009"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Searchable/versioned image, video, motion, marketing and style presets",
+        "Licensed or original previews and explicit reference slots",
+        "Parameter forms, variants, batch runs and compatible-engine selection"
+      ],
+      "acceptance": [
+        "Displayed presets map to executable recipes or an explicit missing dependency",
+        "Recipe, source and preview licenses are recorded separately",
+        "Each successful preset run yields a saved result and reproducible inputs"
+      ]
+    },
+    {
+      "id": "HF-011",
+      "key": "image",
+      "title": "Image Studio, image editing and upscaling",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 2,
+      "depends_on": [
+        "HF-005",
+        "HF-006",
+        "HF-007"
+      ],
+      "current_evidence": [
+        "src/components/command-bar/CommandBar.tsx",
+        "src/app/api/generate-image/"
+      ],
+      "deliverables": [
+        "Text/image/reference generation, variations and batch comparison",
+        "Image editing, masks/inpainting, outpainting and upscaling through compatible engines",
+        "Model-aware aspect ratio, resolution, seed, style and reference controls"
+      ],
+      "acceptance": [
+        "Round-trip real images through generation, history, reuse, preview and download",
+        "Unsupported edit/vector workflows remain explicit until implemented",
+        "Verify mask geometry, source references and output dimensions for editing workflows"
+      ]
+    },
+    {
+      "id": "HF-012",
+      "key": "video",
+      "title": "Video Studio and reference conditioning",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 2,
+      "depends_on": [
+        "HF-005",
+        "HF-006",
+        "HF-007"
+      ],
+      "current_evidence": [
+        "src/app/api/generate/",
+        "src/providers/openrouter.ts"
+      ],
+      "deliverables": [
+        "Text/image/video/audio reference workflows, start/end frames and variations",
+        "Native audio, duration/resolution/aspect ratio and camera controls where supported",
+        "Source-video editing/upscaling and batch output comparison"
+      ],
+      "acceptance": [
+        "Validate source duration, dimensions, reference limits and endpoint capabilities before submission",
+        "Generated videos play and seek correctly after persistence and restart",
+        "Output history retains the exact selected model, inputs and controls"
+      ]
+    },
+    {
+      "id": "HF-013",
+      "key": "cinema",
+      "title": "Cinema Studio and cinematic projects",
+      "in_scope": true,
+      "state": "api_only",
+      "phase": 2,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-008",
+        "HF-012",
+        "HF-021",
+        "HF-024",
+        "HF-027"
+      ],
+      "current_evidence": [
+        "src/models/capabilities/highfield.ts contains optional native Cinema API adapter"
+      ],
+      "deliverables": [
+        "Our project/scene/shot model, editable storyboard and multi-shot continuity",
+        "Camera/lens/movement references, elements, variants and selected takes",
+        "Narration/audio placement, assembled timeline and export",
+        "Project and shot overrides for camera/lens/focal/aperture, era/tempo/genre, lighting/palette, references, extensions and regional edits"
+      ],
+      "acceptance": [
+        "A saved project can be planned, edited, generated, reopened and exported",
+        "Camera guidance is distinguished from physically enforced renderer controls",
+        "Our workflow can use compatible non-Higgsfield engines; the native endpoint remains optional"
+      ]
+    },
+    {
+      "id": "HF-014",
+      "key": "motion-transfer",
+      "title": "Genjutsu-style motion transfer",
+      "in_scope": true,
+      "state": "api_only",
+      "phase": 3,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-009",
+        "HF-012"
+      ],
+      "current_evidence": [
+        "src/providers/higgsfield.ts",
+        "src/providers/higgsfield-media.ts"
+      ],
+      "deliverables": [
+        "Source-video/reference workflow and independent compatible-engine adapter",
+        "Motion guidance, subject/scene replacement and per-output comparison",
+        "Native optional Higgsfield endpoint plus original alternative workflow"
+      ],
+      "acceptance": [
+        "Measure motion/temporal continuity on actual outputs; UI similarity does not establish equivalence",
+        "Validate all required reference and source constraints",
+        "Store source, recipe, engine, parameters and final media for each run"
+      ]
+    },
+    {
+      "id": "HF-015",
+      "key": "object-swap",
+      "title": "Genjutsu-style object and subject replacement",
+      "in_scope": true,
+      "state": "api_only",
+      "phase": 3,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-009",
+        "HF-012"
+      ],
+      "current_evidence": [
+        "src/models/capabilities/highfield.ts"
+      ],
+      "deliverables": [
+        "Select source, target region/subject and replacement references",
+        "Compatible editing adapter with mask/reference translation",
+        "Variants and comparisons of edited versus preserved regions"
+      ],
+      "acceptance": [
+        "A real output changes the intended target and evaluates preservation of untargeted content",
+        "Unsupported localization/masking is never silently ignored",
+        "Native provider execution and our independently implemented replacement workflow are separately identified"
+      ]
+    },
+    {
+      "id": "HF-016",
+      "key": "restyle",
+      "title": "Genjutsu-style restyling and transformations",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-009",
+        "HF-012"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Style/reference transformations and recipe-driven versions",
+        "Temporal consistency controls and batch independent edits",
+        "Compatible native/local/cloud adapters after schema verification"
+      ],
+      "acceptance": [
+        "Verify the actual executable endpoint before advertising a runnable engine",
+        "Each variant is independently tracked with its cost and provenance",
+        "Preservation and style quality are evaluated on a real clip"
+      ]
+    },
+    {
+      "id": "HF-017",
+      "key": "katana",
+      "title": "Katana-style reference-edit recreation",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-009",
+        "HF-012",
+        "HF-024",
+        "HF-027"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Reference-video scene/cut/keyframe analysis",
+        "Editable shot matching, product/character replacements and timing",
+        "Per-shot regeneration, revision history and final assembly"
+      ],
+      "acceptance": [
+        "A reference edit produces a reviewed shot plan with real source timings",
+        "Replacement scenes are generated and assembled in the intended order",
+        "Iterative edits update selected shots without claiming the hosted Katana service was copied"
+      ]
+    },
+    {
+      "id": "HF-018",
+      "key": "marketing",
+      "title": "Marketing Studio and Ads Studio",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-007",
+        "HF-009",
+        "HF-011",
+        "HF-012"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Brand kits, products, media, avatars, hooks, formats and reusable settings",
+        "Image/video ad briefs, quotes, generation runs and campaign variants",
+        "Comparison, history, placement export and product consistency"
+      ],
+      "acceptance": [
+        "Brand/product CRUD and generated assets stay in the selected workspace",
+        "Quotes and run states reflect the actual selected providers",
+        "A complete ad run produces usable media in the requested placement"
+      ]
+    },
+    {
+      "id": "HF-019",
+      "key": "ad-multiplier",
+      "title": "Ad Multiplier and batch targeted edits",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-006",
+        "HF-009",
+        "HF-012",
+        "HF-018",
+        "HF-024"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Source ad plus independent product/subject/background/text variants",
+        "Per-variant instructions, immutable source and preserved untargeted material",
+        "Batch queue, previews, revision and export"
+      ],
+      "acceptance": [
+        "Each requested independent edit gets its own durable job/output",
+        "Compare timing, motion, audio and untargeted text with the source",
+        "No unsupported Cartesian or preservation guarantee is implied"
+      ]
+    },
+    {
+      "id": "HF-020",
+      "key": "characters",
+      "title": "AI Influencer, identities and reusable elements",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-007",
+        "HF-009",
+        "HF-011",
+        "HF-012"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Reusable character/environment/prop references and character sheets",
+        "Influencer setups, looks, outfits, scenes and output variants",
+        "Optional custom identity/LoRA engines and identity asset management"
+      ],
+      "acceptance": [
+        "An identity can be reused across supported jobs with explicit compatible conditioning",
+        "Training, reference reuse and native proprietary identity services remain distinct capabilities",
+        "Private reference/training data is scoped, exportable and removable"
+      ]
+    },
+    {
+      "id": "HF-021",
+      "key": "audio",
+      "title": "Voicebox audio, speech and voice workflows",
+      "in_scope": true,
+      "state": "separate_service",
+      "phase": 2,
+      "depends_on": [
+        "HF-003",
+        "HF-006",
+        "HF-007"
+      ],
+      "current_evidence": [
+        "HIGHFIELD_AUDIO_URL links the separate Voicebox studio; local Kokoro synthesis verified"
+      ],
+      "deliverables": [
+        "Workspace-scoped Voicebox voice/profile and narration asset integration",
+        "Speech, cloning, transcription, dubbing and effects for installed engines",
+        "Music/SFX and native video audio through compatible additional engines"
+      ],
+      "acceptance": [
+        "Record actual installed/loaded engine availability; download is not inference verification",
+        "Generated narration becomes a versioned project asset with measured duration",
+        "Identity, audio access and job ownership are preserved across the Highfield/Voicebox boundary"
+      ]
+    },
+    {
+      "id": "HF-022",
+      "key": "avatars-lipsync",
+      "title": "Avatars, presenters and lip synchronization",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-009",
+        "HF-012",
+        "HF-020",
+        "HF-021"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Presenter/reference inputs, speech selection and lip-sync engine routing",
+        "UGC tutorial, review, unboxing, try-on and website/product workflows",
+        "Timed host overlays and shot-specific narration"
+      ],
+      "acceptance": [
+        "Verify actual speech/lip timing and subject continuity",
+        "Input and duration restrictions follow the selected engine",
+        "Each workflow exports a real playable video rather than only a script or still"
+      ]
+    },
+    {
+      "id": "HF-023",
+      "key": "captions-localization",
+      "title": "Captions, translation and localization",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-007",
+        "HF-009",
+        "HF-021",
+        "HF-024"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Transcription, editable timed text and speaker metadata",
+        "Subtitle export and burned captions with font/style/layout controls",
+        "Translated narration, dubbed variants and localized ads"
+      ],
+      "acceptance": [
+        "Caption time bounds and synchronization are measured against media",
+        "Distinguish subtitle files, soft tracks and burned pixels",
+        "Every locale/version retains its source and revision provenance"
+      ]
+    },
+    {
+      "id": "HF-024",
+      "key": "editor",
+      "title": "Video editor, motion graphics and export",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 2,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-021"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Timeline for cuts, trim/speed, transitions, text and overlays",
+        "Audio mixing, captions, graphic tracks and reusable compositions",
+        "Isolated FFmpeg/render worker, previews and final exports"
+      ],
+      "acceptance": [
+        "Timeline revisions produce deterministic measured timing and playable output",
+        "Render work is bounded, cancellable and recoverable after failure",
+        "Exports preserve dimensions, frame rate, audio and selected composition settings"
+      ]
+    },
+    {
+      "id": "HF-025",
+      "key": "canvas",
+      "title": "Canvas boards and executable workflows",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-009"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Typed nodes, edges, media/prompt/control inputs and board revision storage",
+        "DAG validation, node preflight, quote, run/cancel and rerun",
+        "Node results/history and incremental project reuse"
+      ],
+      "acceptance": [
+        "Reject cycles, missing dependencies, stale revisions and cross-workspace references",
+        "Rerunning a changed node invalidates only the affected downstream results",
+        "Board execution persists accepted jobs and outputs across restart"
+      ]
+    },
+    {
+      "id": "HF-026",
+      "key": "3d",
+      "title": "3D Jutsu-style scene creation",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-006",
+        "HF-007",
+        "HF-009"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Project scenes, asset search/import and interactive previews",
+        "Guarded Blender operations with scene revisions and camera/light controls",
+        "GLB/blend exports, renders and image/video generation from scenes",
+        "Editable hierarchy/primitives/transforms, lights, cameras, animation trajectories/timeline, undo/redo and revision restore"
+      ],
+      "acceptance": [
+        "Only settled authorized scene revisions become downloadable artifacts",
+        "Conflicting edits are rejected and long worker jobs support cancel/status",
+        "A real scene can be reopened, edited, rendered and exported"
+      ]
+    },
+    {
+      "id": "HF-027",
+      "key": "agent-director",
+      "title": "Director agent and creative orchestration",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 2,
+      "depends_on": [
+        "HF-003",
+        "HF-006",
+        "HF-007",
+        "HF-008"
+      ],
+      "current_evidence": [
+        "src/lib/director.ts",
+        "src/app/[locale]/director/page.tsx"
+      ],
+      "deliverables": [
+        "Persisted conversations, structured/editable plans and project context",
+        "Scoped model/provider tools and skill execution with budgets",
+        "Real media analysis, iterations, cancellation and resumable runs",
+        "User/workspace-visible skills, persistent memory, connectors and apps with explicit permissions",
+        "Ask/planning versus generation/execution modes with measured cost and visible run state"
+      ],
+      "acceptance": [
+        "Text/vision reasoning never masquerades as media synthesis",
+        "Tool calls respect workspace roles, explicit engine selection and output schemas",
+        "A plan can drive controlled jobs and retain their results/provenance"
+      ]
+    },
+    {
+      "id": "HF-028",
+      "key": "mcp",
+      "title": "Highfield MCP server and agent integrations",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 2,
+      "depends_on": [
+        "HF-003",
+        "HF-006",
+        "HF-007",
+        "HF-008",
+        "HF-009",
+        "HF-029"
+      ],
+      "current_evidence": [
+        "src/app/api/mcp/route.ts currently exposes four read-only tools"
+      ],
+      "deliverables": [
+        "Authenticated tools/resources/prompts backed by the same app services",
+        "Discover/quote/upload/submit/status/cancel/assets/projects/skills/usage tools",
+        "Workspace-scoped tokens, clients/CLI configuration and documented errors"
+      ],
+      "acceptance": [
+        "UI, REST and MCP enforce the same permissions and job semantics",
+        "A real MCP client can initialize, discover and complete an implemented workflow",
+        "Unimplemented services are not advertised as functioning tools; credentials are never returned"
+      ]
+    },
+    {
+      "id": "HF-029",
+      "key": "api-sdk",
+      "title": "Public API, SDK, service tokens and webhooks",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 1,
+      "depends_on": [
+        "HF-003",
+        "HF-006",
+        "HF-007"
+      ],
+      "current_evidence": [
+        "src/app/api/"
+      ],
+      "deliverables": [
+        "Versioned schemas, API credentials/scopes and documented SDK/CLI contracts",
+        "Idempotency/reconciliation, pagination, uploads and signed callbacks",
+        "Developer settings, token rotation and callback delivery history"
+      ],
+      "acceptance": [
+        "Service tokens cannot cross workspace or permission boundaries",
+        "Event/callback retries do not create duplicate generation jobs",
+        "Examples use documented executable endpoints and contain no owner secrets"
+      ]
+    },
+    {
+      "id": "HF-030",
+      "key": "usage-billing",
+      "title": "Usage, budgets, credits and billing administration",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 3,
+      "depends_on": [
+        "HF-003",
+        "HF-005",
+        "HF-006"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Provider quotes/cost records, usage charts and per-workspace/member budgets",
+        "Auditable credit reservations, settlement, failed-job release and limits",
+        "Optional subscriptions/payments/invoices with test-mode provider integration",
+        "Explicit product policies for gifts/promocodes, refill, spending pauses, invoices and failed-job reconciliation if enabled"
+      ],
+      "acceptance": [
+        "Credits and prices reflect real provider/product rules and an auditable ledger",
+        "Unknown estimates are explicit; uncertain jobs do not silently double-charge",
+        "No live payment, recurring billing or real purchase is created by setup/tests"
+      ]
+    },
+    {
+      "id": "HF-031",
+      "key": "sharing",
+      "title": "Community, collaboration and publishing",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 4,
+      "depends_on": [
+        "HF-003",
+        "HF-007"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Private/public project links, favorites, remixable provenance and discovery",
+        "Profile pages, shared galleries and collaborative review",
+        "Explicit publish/unpublish, retention and moderation controls",
+        "Revision-linked comments, chat, reactions, approvals and optional real-time calls with separately verified media infrastructure"
+      ],
+      "acceptance": [
+        "Outputs remain private until an authorized user publishes them",
+        "Revocation and workspace membership changes remove protected access",
+        "A public/shared view never exposes private keys or unrelated assets"
+      ]
+    },
+    {
+      "id": "HF-032",
+      "key": "website-builder",
+      "title": "Website/game builder and hosted code projects",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 4,
+      "depends_on": [
+        "HF-003",
+        "HF-006",
+        "HF-007",
+        "HF-009",
+        "HF-029"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Isolated code projects, editable previews, build/deploy/status and source export",
+        "Project databases, managed secret names and revision-based deployment",
+        "Optional community publishing and external hosting adapters"
+      ],
+      "acceptance": [
+        "Build/deploy is isolated from the host and other workspaces",
+        "Secret values remain outside source exports, previews and MCP readback",
+        "Actual hosting/deployment contracts are verified before a provider is enabled"
+      ]
+    },
+    {
+      "id": "HF-033",
+      "key": "creative-integrations",
+      "title": "Creative-app integrations and production skills",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 4,
+      "depends_on": [
+        "HF-009",
+        "HF-024",
+        "HF-026",
+        "HF-029"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Licensed/public skill sources and our compatible tool adapters",
+        "Blender/FFmpeg workflows plus optional After Effects, Premiere, Photoshop, Illustrator, Resolve and TouchDesigner bridges",
+        "Detect app availability, runtime dependencies and editable output formats"
+      ],
+      "acceptance": [
+        "Source code license and required commercial app licenses are recorded separately",
+        "An upstream skill is not claimed to work without its required app/tools",
+        "Produce and reopen the declared editable artifact for each integrated workflow"
+      ]
+    },
+    {
+      "id": "HF-034",
+      "key": "operations-workers",
+      "title": "Local workers, deployment and operations",
+      "in_scope": true,
+      "state": "partial",
+      "phase": 1,
+      "depends_on": [
+        "HF-003",
+        "HF-005",
+        "HF-006"
+      ],
+      "current_evidence": [
+        "Single-owner deployment and local model connections exist"
+      ],
+      "deliverables": [
+        "Scoped local image/video/audio/3D workers with engine/version discovery",
+        "Queues, resource/concurrency limits, cancellation, health and diagnostics",
+        "Backup/restore, migration/rollback and secret-safe monitoring"
+      ],
+      "acceptance": [
+        "Preserve current owner data, working providers and application access during migration",
+        "Local workers cannot read unrelated host/workspace files or silently switch to cloud",
+        "Verify recovery with a real job and restore test before claiming operation readiness"
+      ]
+    },
+    {
+      "id": "HF-035",
+      "key": "specialized-studios",
+      "title": "Specialized creative studios",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 4,
+      "depends_on": [
+        "HF-009",
+        "HF-011",
+        "HF-012",
+        "HF-018",
+        "HF-020",
+        "HF-024"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Photodump/product/photo shoots, fashion/try-on, storyboard/Popcorn and mixed-media workflows",
+        "Reusable input forms, recipes, previews and editable project variants",
+        "Supported-model filtering and explicit per-studio engine requirements"
+      ],
+      "acceptance": [
+        "Each advertised studio has a concrete input-to-output workflow and retained project state",
+        "Result quality, continuity and export are evaluated with representative real inputs",
+        "Marketing labels alone do not mark a workflow implemented"
+      ]
+    },
+    {
+      "id": "HF-036",
+      "key": "reference-capture",
+      "title": "Reference collection and browser integration",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 4,
+      "depends_on": [
+        "HF-003",
+        "HF-007",
+        "HF-029"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Reference capture/import with source/provenance and project destination",
+        "Optional browser extension/client integration with scoped authorization",
+        "Reference-element editing, search and reuse"
+      ],
+      "acceptance": [
+        "Imported references preserve attribution and selected workspace",
+        "Browser client has only the permissions needed for explicit capture",
+        "Captured source/media uses a documented authenticated import path"
+      ]
+    },
+    {
+      "id": "HF-037",
+      "key": "learning-discovery",
+      "title": "Prompt guides, help and learning content",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 4,
+      "depends_on": [
+        "HF-008",
+        "HF-009",
+        "HF-010",
+        "HF-031"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Original/licensed prompt guides, workflow documentation and examples",
+        "Searchable help/academy resources linked to actual features",
+        "Optional showcases, challenges and community discovery"
+      ],
+      "acceptance": [
+        "Examples are marked as demonstrations with their actual dependencies",
+        "Source content and media licensing is recorded before redistribution",
+        "Guides and in-product help match the current implementation"
+      ]
+    },
+    {
+      "id": "HF-038",
+      "key": "image-layers",
+      "title": "Image Layers editor and compositions",
+      "in_scope": true,
+      "state": "planned",
+      "phase": 2,
+      "depends_on": [
+        "HF-007",
+        "HF-011"
+      ],
+      "current_evidence": [],
+      "deliverables": [
+        "Editable image layers, masks, transforms, ordering, blend/composite controls and undo/redo",
+        "Project revisions, image generation/editing integration and layered composition persistence",
+        "Flattened exports and compatible editable interchange formats",
+        "Layer decomposition, text detection/replacement, background removal, relighting, expand/crop, grading and angle tools with verified adapters"
+      ],
+      "acceptance": [
+        "Reopen an image composition with its layers, masks and references intact",
+        "Layer edits and generation affect only the intended regions and preserve revision history",
+        "Image Layers and the video/motion editor have distinct documented formats and controls"
+      ]
+    }
+  ],
+  "multiuser_release_gate": {
+    "current_mode": "Single shared owner studio with external ingress authentication; application multiuser accounts are not implemented.",
+    "keep_existing_access_until_ready": true,
+    "required_entities": [
+      "users",
+      "sessions",
+      "workspaces",
+      "memberships",
+      "invitations",
+      "projects",
+      "shots",
+      "assets",
+      "jobs",
+      "connection_versions",
+      "prompt_revisions",
+      "skill_revisions",
+      "workflow_runs",
+      "usage_events",
+      "audit_events"
+    ],
+    "migration_requirements": [
+      "Assign current owner history, assets and credentials to an explicit owner workspace using a repeatable migration.",
+      "Replace process-global credential selection with a job-bound connection context.",
+      "Require authorized workspace context in repositories, every REST/MCP operation, streams and media requests.",
+      "Persist submission intent and idempotency before externally charged operations; reconcile uncertain outcomes.",
+      "Add transactional persistence, worker leases and workspace-aware cache invalidation.",
+      "Verify owner recovery and restore before changing ingress or allowing new accounts."
+    ],
+    "isolation_tests": [
+      "Cross-workspace reads, writes, uploads, reuse, SSE, Range downloads and MCP.",
+      "Concurrent generation and polling with different credential fixtures.",
+      "Owner/admin/member/viewer permissions, role changes, session revocation, invite expiry and last-owner protection.",
+      "Workspace switching clears caches, references and unauthorized pending results.",
+      "Migration repeatability, empty-store behavior, rollback and backup restore."
+    ]
+  },
+  "references": [
+    {
+      "url": "https://higgsfield.ai/",
+      "evidence": "Public navigation and discovery; not authenticated screen verification."
+    },
+    {
+      "url": "https://higgsfield.ai/mcp",
+      "evidence": "Public skill families, client integration and product references."
+    },
+    {
+      "url": "https://higgsfield.ai/creator-hub/help-center/getting-started/whats-in-my-higgsfield-account",
+      "evidence": "Documented assets, profile, personal settings and account controls."
+    },
+    {
+      "url": "https://higgsfield.ai/creator-hub/help-center/getting-started/create-an-account-and-sign-in",
+      "evidence": "Documented signup, identity providers, verification and recovery."
+    },
+    {
+      "url": "https://higgsfield.ai/creator-hub/help-center/business/team-and-business-higgsfield",
+      "evidence": "Documented team roles, spend, reporting and management."
+    },
+    {
+      "url": "https://higgsfield.ai/creator-hub/help-center/tools/how-do-i-use-cinema-studio",
+      "evidence": "Documented Cinema controls; not tested in an authenticated session."
+    },
+    {
+      "url": "https://higgsfield.ai/creator-hub/help-center/tools/how-do-i-use-supercomputer",
+      "evidence": "Documented agent Skills, Memory, Connectors, Apps and task behavior."
+    },
+    {
+      "url": "https://higgsfield.ai/creator-hub/help-center/tools/how-do-i-use-canvas",
+      "evidence": "Documented graph authoring, execution, templates and collaboration."
+    },
+    {
+      "url": "https://higgsfield.ai/blog/higgsfield-3d-jutsu",
+      "evidence": "Documented scene editor, animation, revisions, exports and sharing."
+    },
+    {
+      "url": "https://higgsfield.ai/blog/edit-photos-with-ai-higgsfield",
+      "evidence": "Documented image Layers and editing tools, distinct from video assembly."
+    },
+    {
+      "url": "https://higgsfield.ai/creator-hub/help-center/integrations/external-integrations-higgsfield",
+      "evidence": "Documented desktop and agent integration surfaces; availability varies by host."
+    },
+    {
+      "url": "https://docs.higgsfield.ai/docs/models/cinema-studio-4/generate.md",
+      "evidence": "Complete native Cinema schema for future adapter expansion; not the current limited implementation."
+    },
+    {
+      "url": "https://docs.higgsfield.ai/docs/concepts/idempotency.md",
+      "evidence": "Documented native idempotency contract for future durable submission work."
+    }
+  ]
+}

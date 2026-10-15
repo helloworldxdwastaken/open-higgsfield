@@ -4,7 +4,9 @@
 
 Build Highfield as our own creative platform by extending this fork. The existing interface, provider adapters, generation jobs, history and local Director are the foundation for further development. Keep the repository name `open-higgsfield` and preserve upstream attribution.
 
-Highfield will own its projects, shot plans, reference assets, presets and workflow orchestration. Each workflow will use a compatible, explicitly selected local engine or cloud provider. The native Higgsfield API remains an optional connection; our independently implemented workflows must also work with other compatible engines. Voicebox remains the audio foundation, with voice assets to be integrated into Highfield projects.
+The owner has confirmed the full platform scope: studios and workflows, the complete interface and button behavior, prompts and skills, MCP/API/CLI, accounts, teams, usage and administration. The scope is broader than a single project workflow. The [build ledger](highfield-scope.json) tracks 38 modules, their present coverage, dependencies, deliverables and acceptance criteria. Entries in that ledger are requirements, not claims of feature parity.
+
+Highfield will own its projects, shot plans, reference assets, presets, account/workspace data and workflow orchestration. Each workflow will use a compatible, explicitly selected local engine or cloud provider. The native Higgsfield API remains an optional connection; our independently implemented workflows must also work with other compatible engines. Voicebox remains the audio foundation, with voice assets to be integrated into Highfield projects.
 
 The next development stage is one complete project workflow:
 
@@ -12,7 +14,41 @@ The next development stage is one complete project workflow:
 2. Generate its shots through the existing provider and job system, retaining references, progress and revisions.
 3. Add Voicebox narration and assemble an export from the completed media.
 
-This is the development direction, not a list of completed features. Build and verify that complete workflow before expanding the separate reference-edit, Canvas and Ads workflows. New workflows should share the existing jobs and asset storage.
+That complete workflow is one delivery stage within the full scope. Cinema, Genjutsu-style motion transfer/object swap/restyling, Katana, effects, marketing/Ads, identities, audio/lipsync, Layers, video editing, Canvas, 3D, agents, specialized studios, sharing and integrations remain tracked until independently implemented and verified. All workflows should share the same authorized project, asset and job services.
+
+## Reusable source and MCP coverage
+
+Three official MIT-licensed repositories are pinned under `third_party/`. Their original license and notices remain in each source tree. [Source provenance](upstream-sources.json) records exact commits, license hashes, contents and external dependencies.
+
+| Source | Available material | Current integration state |
+| --- | --- | --- |
+| [Higgsfield skills](https://github.com/higgsfield-ai/skills) | Eight public skills and supporting prompt/procedure/script files covering generation, identities, photoshoots, brand kits, marketplace cards, websites, explainers and thumbnails. | Source imported; adaptation to Highfield services and engines is pending. |
+| [Higgsfield CLI](https://github.com/higgsfield-ai/cli) | Installer, documentation and notices. The released binary implementation is absent from this repository. | Reference source only; no binary installed or installer executed. |
+| [Cursor plugin](https://github.com/higgsfield-ai/cursor-plugin) | Plugin/client configuration and a routing command for the hosted Higgsfield MCP. | Source imported; this is not the hosted MCP server implementation. |
+
+To fetch these optional source references after cloning: `git submodule update --init --recursive`. They are excluded from application lint/typechecking and are not automatically loaded, registered as agent skills, or executed by the studio. Ported Highfield skills will need explicit input/output schemas, tool adapters, compatible engines, authorization and run verification.
+
+The [MCP feature inventory](highfield-mcp-inventory.json) maps all 119 Higgsfield connector operations exposed during this audit to the build modules. It covers projects/folders/assets, models, generation/estimates, presets, audio, marketing, Canvas, 3D, analysis, websites and workspaces. It is a reference inventory, not a claim that Highfield implements those tools. Our current endpoint still exposes four read-only tools. Web, API, MCP, CLI and plugin availability must be verified separately.
+
+## Accounts and shared platform foundations
+
+Accounts include signup/sign-in/recovery, profiles, sessions, invitations, team membership, owner/admin/member/viewer roles, workspace switching, scoped developer/MCP credentials, usage, budgets and administration. Public product documentation informs the feature requirements; unobserved private admin screens will be independently designed.
+
+The current application has one shared owner workspace. `src/proxy.ts` handles locale routing, while jobs, storage and provider credentials use shared state. Account pages alone cannot provide separate users' access. Before enabling multiple accounts:
+
+1. Add durable identity, membership, project, asset, connection, usage and audit records with workspace ownership.
+2. Assign the existing owner's data to an explicit workspace through a repeatable migration and tested restore path.
+3. Replace process-global credential selection and unscoped job/media queries with authorized per-workspace services, including workers, events, Range downloads and MCP.
+4. Test two workspaces, concurrent provider credentials, every role, invitation/session revocation and workspace cache changes.
+5. Verify owner access and recovery before changing the existing ingress or enabling new accounts.
+
+The build ledger contains this release gate. The source imports and specification update do not enable signup, change account access, or modify the running studios.
+
+## Completion contract for UI and workflows
+
+Every button, menu, drop target, keyboard action and agent tool needs an action identifier, required permission, validated inputs, a real service operation, state transitions and a resulting saved entity/job/artifact. Verify loading, empty, invalid, denied, unconfigured, running, partial-result, failed, cancelled and successful states. Refresh and restart must preserve the intended project state.
+
+A copied label, public API model name, imported skill file or unavailable modal does not mark its workflow complete. Completion requires working permissions, durable execution, an inspected real output and reuse/export. Keep schema fixtures, browser checks, actual local inference and paid-provider inference as separate evidence.
 
 ## Implemented interface and routing
 

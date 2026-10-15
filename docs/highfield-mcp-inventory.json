@@ -1,0 +1,1051 @@
+{
+  "schema_version": 1,
+  "reviewed": "2026-10-16",
+  "reference": "Publicly exposed Higgsfield connector operation names and descriptions; no account/workspace state was read.",
+  "warning": "These are feature references mapped to the Highfield backlog. This is not a copied MCP server or a claim that these tools are implemented. Current Highfield MCP has four read-only tools.",
+  "reference_tool_count": 119,
+  "tools": [
+    {
+      "reference_tool": "ads_studio_add_product",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_cancel_run",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_create_brand",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_generate",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_get_brand",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_get_product",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_get_run",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_list_brands",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_list_products",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_list_runs",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_quote",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ads_studio_update_product",
+      "highfield_modules": [
+        "HF-018",
+        "HF-019",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ai_influencer_generate",
+      "highfield_modules": [
+        "HF-020",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ai_influencer_get_options",
+      "highfield_modules": [
+        "HF-020",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ai_influencer_get_settings",
+      "highfield_modules": [
+        "HF-020",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ai_influencer_list_presets",
+      "highfield_modules": [
+        "HF-020",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "ai_influencer_prepare",
+      "highfield_modules": [
+        "HF-020",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "balance",
+      "highfield_modules": [
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "canvas_add",
+      "highfield_modules": [
+        "HF-025"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "canvas_create",
+      "highfield_modules": [
+        "HF-025"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "canvas_read",
+      "highfield_modules": [
+        "HF-025"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "canvas_remove",
+      "highfield_modules": [
+        "HF-025"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "canvas_run",
+      "highfield_modules": [
+        "HF-025"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "canvas_update",
+      "highfield_modules": [
+        "HF-025"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "create_folder",
+      "highfield_modules": [
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "create_project",
+      "highfield_modules": [
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "create_reference_element",
+      "highfield_modules": [
+        "HF-020"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "create_website",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "deploy_website",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "estimate_image_cost",
+      "highfield_modules": [
+        "HF-006",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "estimate_video_cost",
+      "highfield_modules": [
+        "HF-006",
+        "HF-030"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "execute_preset",
+      "highfield_modules": [
+        "HF-009",
+        "HF-010",
+        "HF-014",
+        "HF-015",
+        "HF-016"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "generate_audio",
+      "highfield_modules": [
+        "HF-021",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "generate_audio_batch",
+      "highfield_modules": [
+        "HF-021",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "generate_image",
+      "highfield_modules": [
+        "HF-011",
+        "HF-006"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "generate_image_batch",
+      "highfield_modules": [
+        "HF-011",
+        "HF-006"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "generate_video",
+      "highfield_modules": [
+        "HF-012",
+        "HF-006"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "generate_video_batch",
+      "highfield_modules": [
+        "HF-012",
+        "HF-006"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "get_faceless_channel_presets",
+      "highfield_modules": [
+        "HF-009",
+        "HF-022",
+        "HF-023",
+        "HF-024"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "get_preferences",
+      "highfield_modules": [
+        "HF-001",
+        "HF-003",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "get_preset_instructions",
+      "highfield_modules": [
+        "HF-009",
+        "HF-010",
+        "HF-014",
+        "HF-015",
+        "HF-016"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "get_presets",
+      "highfield_modules": [
+        "HF-009",
+        "HF-010",
+        "HF-014",
+        "HF-015",
+        "HF-016"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "get_profile",
+      "highfield_modules": [
+        "HF-002"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "job_display",
+      "highfield_modules": [
+        "HF-006",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "jobs_wait",
+      "highfield_modules": [
+        "HF-006",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "list_folders",
+      "highfield_modules": [
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "list_project_assets",
+      "highfield_modules": [
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "list_projects",
+      "highfield_modules": [
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "list_voices",
+      "highfield_modules": [
+        "HF-021",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "list_website_categories",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "list_websites",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "list_workspaces",
+      "highfield_modules": [
+        "HF-003"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_create_brand_kit",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_create_product_from_media",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_delete_brand_kit",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_get_brand_kit",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_ad_formats",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_avatars",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_brand_kits",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_hooks",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_products",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_settings",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_video_presets",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_list_webproducts",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "marketing_update_brand_kit",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "media_confirm",
+      "highfield_modules": [
+        "HF-007",
+        "HF-029"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "media_upload",
+      "highfield_modules": [
+        "HF-007",
+        "HF-029"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "media_upload_and_confirm",
+      "highfield_modules": [
+        "HF-007",
+        "HF-029"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "models_get",
+      "highfield_modules": [
+        "HF-005"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "models_list",
+      "highfield_modules": [
+        "HF-005"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "models_recommend",
+      "highfield_modules": [
+        "HF-005"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "models_search",
+      "highfield_modules": [
+        "HF-005"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "open_ads_studio",
+      "highfield_modules": [
+        "HF-018"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "open_ai_influencer",
+      "highfield_modules": [
+        "HF-020",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "open_canvas",
+      "highfield_modules": [
+        "HF-025"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "open_home",
+      "highfield_modules": [
+        "HF-001",
+        "HF-003",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "participate_in_contest",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "publish_website",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "register_katana_result",
+      "highfield_modules": [
+        "HF-017"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "rename_website",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "resolve_faceless_channel_preset",
+      "highfield_modules": [
+        "HF-009",
+        "HF-022",
+        "HF-023",
+        "HF-024"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "sandbox_exec",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_create_project",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_generate_angles",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_generate_video",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_get_artifact",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_get_blend",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_get_generation",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_get_glb",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_get_operation",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_get_project",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_import_asset",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_list_generations",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_list_projects",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_query_python",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_run_python",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_search_assets",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "scene_builder_3d_show_scene",
+      "highfield_modules": [
+        "HF-026"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "show_generation_by_ids",
+      "highfield_modules": [
+        "HF-006",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "show_generations",
+      "highfield_modules": [
+        "HF-006",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "show_katana_result",
+      "highfield_modules": [
+        "HF-017"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "show_marketing_studio_generations",
+      "highfield_modules": [
+        "HF-006",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "show_medias",
+      "highfield_modules": [
+        "HF-007",
+        "HF-029"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "show_reference_elements",
+      "highfield_modules": [
+        "HF-020"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "show_result",
+      "highfield_modules": [
+        "HF-006",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "soul_list",
+      "highfield_modules": [
+        "HF-020"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "start_katana_preset_session",
+      "highfield_modules": [
+        "HF-017"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "track_skill_activation",
+      "highfield_modules": [
+        "HF-009",
+        "HF-004"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "update_preferences",
+      "highfield_modules": [
+        "HF-001",
+        "HF-003",
+        "HF-007"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "video_analysis_create",
+      "highfield_modules": [
+        "HF-017",
+        "HF-027"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "video_analysis_jobs",
+      "highfield_modules": [
+        "HF-017",
+        "HF-027"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "video_analysis_status",
+      "highfield_modules": [
+        "HF-017",
+        "HF-027"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "voice_change",
+      "highfield_modules": [
+        "HF-021",
+        "HF-022"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "website_db",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "website_repo_access",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "website_secrets",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "website_status",
+      "highfield_modules": [
+        "HF-032",
+        "HF-031"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "workspace_clear_selection",
+      "highfield_modules": [
+        "HF-003"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    },
+    {
+      "reference_tool": "workspace_select",
+      "highfield_modules": [
+        "HF-003"
+      ],
+      "implementation": "reference_interface_only",
+      "implemented_in_highfield": false
+    }
+  ]
+}

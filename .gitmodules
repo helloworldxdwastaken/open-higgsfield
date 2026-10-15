@@ -1,0 +1,9 @@
+[submodule "third_party/higgsfield-skills"]
+	path = third_party/higgsfield-skills
+	url = https://github.com/higgsfield-ai/skills.git
+[submodule "third_party/higgsfield-cli"]
+	path = third_party/higgsfield-cli
+	url = https://github.com/higgsfield-ai/cli.git
+[submodule "third_party/higgsfield-cursor-plugin"]
+	path = third_party/higgsfield-cursor-plugin
+	url = https://github.com/higgsfield-ai/cursor-plugin.git
