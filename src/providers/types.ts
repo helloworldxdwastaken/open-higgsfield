@@ -1,7 +1,7 @@
 import type { CanonicalMediaInputs, CanonicalParams } from "@/models/canonical";
 import type { ModelCapabilities } from "@/models/capabilities/types";
 
-export type ProviderId = "freepik" | "google-ai-studio" | "google-vertex" | "vercel-ai-gateway";
+export type ProviderId = "freepik" | "google-ai-studio" | "google-vertex" | "vercel-ai-gateway" | "higgsfield" | "openrouter" | "draw-things";
 export type GenerationStatus = "CREATED" | "IN_PROGRESS" | "COMPLETED" | "FAILED" | "ERROR" | "CANCELLED";
 
 export interface GeneratedAsset {

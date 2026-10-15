@@ -1,3 +1,4 @@
+import { refreshConnections } from "@/lib/connections";
 /** Provider-neutral background polling for asynchronous generation tasks. */
 import { attachGeneratedAssets } from "@/lib/generated-assets";
 import { publicErrorMessage } from "@/lib/public-error";
@@ -23,6 +24,7 @@ async function pollOnce(taskId: string, elapsed: number): Promise<"continue" | "
     if (!task) return "done";
 
     try {
+        refreshConnections();
         const providerId = (task.provider_id ?? "freepik") as ProviderId;
         const operation = task.provider_operation ?? (task.poll_url ? { pollUrl: task.poll_url } : undefined);
         if (!operation) throw new Error("ERR_MISSING_PROVIDER_OPERATION");

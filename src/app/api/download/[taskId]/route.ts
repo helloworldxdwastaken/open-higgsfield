@@ -30,7 +30,7 @@ export async function GET(
       headers: {
         "Content-Type": mimeType,
         "Content-Disposition": `${attachment ? "attachment" : "inline"}; filename="${taskId}.${extension}"`,
-        "Cache-Control": "public, max-age=31536000, immutable",
+        "Cache-Control": "private, no-store",
       },
     });
   };
@@ -51,7 +51,7 @@ export async function GET(
           headers: {
             "Content-Type": mimeType,
             "Content-Disposition": `inline; filename="${filename}"`,
-            "Cache-Control": "public, max-age=31536000, immutable",
+            "Cache-Control": "private, no-store",
           },
         });
       }
@@ -71,6 +71,7 @@ export async function GET(
         headers: {
           "Content-Type": mimeType,
           "Content-Disposition": `attachment; filename="${filename}"`,
+            "Cache-Control": "private, no-store",
         },
       });
     }
@@ -102,9 +103,11 @@ export async function GET(
 
   // Support Range requests for proper video streaming / seeking
   if (rangeHeader) {
-    const match = rangeHeader.match(/bytes=(\d+)-(\d*)/);
-    const start = match ? parseInt(match[1], 10) : 0;
-    const end = match && match[2] ? parseInt(match[2], 10) : fileSize - 1;
+    const match = rangeHeader.match(/^bytes=(\d*)-(\d*)$/);
+    if (!match || (!match[1] && !match[2])) return new NextResponse(null, { status: 416, headers: { "Content-Range": `bytes */${fileSize}`, "Cache-Control": "private, no-store" } });
+    const start = match[1] ? Number(match[1]) : Math.max(0, fileSize - Number(match[2]));
+    const end = match[1] && match[2] ? Math.min(Number(match[2]), fileSize - 1) : fileSize - 1;
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start < 0 || start >= fileSize || end < start) return new NextResponse(null, { status: 416, headers: { "Content-Range": `bytes */${fileSize}`, "Cache-Control": "private, no-store" } });
     const chunkSize = end - start + 1;
     const stream = fs.createReadStream(videoPath, { start, end });
     const readable = new ReadableStream({
@@ -121,6 +124,7 @@ export async function GET(
         "Content-Range": `bytes ${start}-${end}/${fileSize}`,
         "Content-Length": String(chunkSize),
         "Accept-Ranges": "bytes",
+        "Cache-Control": "private, no-store",
       },
     });
   }
@@ -133,6 +137,7 @@ export async function GET(
       "Content-Disposition": disposition,
       "Content-Length": String(fileSize),
       "Accept-Ranges": "bytes",
+      "Cache-Control": "private, no-store",
     },
   });
 }

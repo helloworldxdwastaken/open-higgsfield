@@ -1,17 +1,17 @@
 {
   "name": "open-higgsfield",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Open-source Higgsfield alternative for multi-provider AI image and video generation.",
+  "description": "Highfield creative studio: a self-hosted open-higgsfield fork with direct cloud providers and local planning engines.",
   "license": "MIT",
   "author": "TechBe",
-  "homepage": "https://openhiggs.techbe.me",
+  "homepage": "https://github.com/helloworldxdwastaken/open-higgsfield",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TechBeme/open-higgsfield.git"
+    "url": "git+https://github.com/helloworldxdwastaken/open-higgsfield.git"
   },
   "bugs": {
-    "url": "https://github.com/TechBeme/open-higgsfield/issues"
+    "url": "https://github.com/helloworldxdwastaken/open-higgsfield/issues"
   },
   "keywords": [
     "ai-image-generator",
@@ -32,7 +32,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "check": "npm run lint && npm run typecheck && npm run build"
+    "check": "npm run lint && npm run typecheck && npm run build",
+    "test:director": "node tests/director.cjs",
+    "test:contracts": "node tests/director.cjs && node tests/task-store.cjs && node tests/providers.cjs"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^4.0.71",
@@ -70,5 +72,8 @@
     "eslint-config-next": "^16.3.4",
     "tailwindcss": "^4.3.3",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

@@ -3,13 +3,17 @@ import { VIDEO_CAPABILITIES } from "@/models/capabilities/video";
 import { getVideoAdapter } from "@/models/adapters/video";
 import { submitGeneration } from "@/lib/generation-service";
 import { processImageUpload, processFileUpload, resolveUrl } from "@/lib/media-upload";
+import { higgsfieldInput } from "@/providers/higgsfield-media";
+import { refreshConnections } from "@/lib/connections";
 import { publicErrorMessage } from "@/lib/public-error";
 import type { CanonicalParams, CanonicalMediaInputs } from "@/models/canonical";
 
 export const runtime = "nodejs";
-export const maxDuration = 30;
+export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
+  const origin = req.headers.get("origin");
+  if (!origin || origin !== process.env.STUDIO_PUBLIC_ORIGIN) return NextResponse.json({ error: "Studio origin required." }, { status: 403 });
   const form = await req.formData();
 
   // ── Parse canonical params from FormData ─────────────────────────────────
@@ -58,6 +62,30 @@ export async function POST(req: NextRequest) {
   const validationErrors = adapter?.validate(modelId, canonicalParams, caps) ?? [];
   if (validationErrors.length > 0) {
     return NextResponse.json({ error: validationErrors[0] }, { status: 400 });
+  }
+
+  // Native Higgsfield uploads use its own presigned storage. Validate source constraints before submission.
+  if (caps.provider === "higgsfield") {
+    refreshConnections();
+    if (!process.env.HF_CREDENTIALS) return NextResponse.json({ error: "ERR_HIGGSFIELD_NOT_CONFIGURED" }, { status: 400 });
+    try {
+      const nativeImages: Record<string, string> = {};
+      let nativeVideo: string | undefined;
+      for (const slot of caps.media_slots) {
+        const files = form.getAll(`file_${slot.id}`).filter((value): value is File => value instanceof File && value.size > 0);
+        const urls = form.getAll(`url_${slot.id}`).filter((value): value is string => typeof value === "string" && Boolean(value.trim()));
+        const inputs: Array<{ file: File | null; url: string }> = [...files.map(file => ({ file, url: "" })), ...urls.map(url => ({ file: null, url: url.trim() }))];
+        if (slot.required && !inputs.length) throw new Error("ERR_REQUIRED_REFERENCE_MISSING");
+        if (inputs.length > (slot.multiple ? 8 : 1)) throw new Error("ERR_TOO_MANY_REFERENCE_INPUTS");
+        for (const [index, input] of inputs.entries()) {
+          const resolved = await higgsfieldInput(input.file, input.url, slot.kind);
+          if (slot.kind === "video") nativeVideo = resolved;
+          else nativeImages[`${slot.id}_${index}`] = resolved;
+        }
+      }
+      const taskId = await submitGeneration({ mediaType: "video", modelId, capabilities: caps, params: canonicalParams, media: { images: nativeImages, video: nativeVideo }, reuseState: { settings } });
+      return NextResponse.json({ task_id: taskId });
+    } catch (error) { return NextResponse.json({ error: publicErrorMessage(error) }, { status: 400 }); }
   }
 
   // ── Process media uploads ────────────────────────────────────────────────

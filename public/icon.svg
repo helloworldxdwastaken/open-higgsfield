@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Open-Higgsfield logo">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Highfield logo">
   <rect width="64" height="64" rx="18" fill="#0a0a0a"/>
-  <path d="M14 17h10v12h16V17h10v30H40V37H24v10H14z" fill="#d5ff47"/>
-  <circle cx="51" cy="50" r="5" fill="#f4f7fb"/>
+  <path d="M20 16h8L17 48H9zm15 0h8L32 48h-8zm15 0h8L47 48h-8z" fill="#d5ff47"/>
 </svg>

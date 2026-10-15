@@ -18,12 +18,12 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-    metadataBase: new URL("https://openhiggs.techbe.me"),
+    metadataBase: new URL(process.env.STUDIO_PUBLIC_ORIGIN || "http://localhost:3000"),
     title: {
-        default: "Open-Higgsfield - Open-Source Higgsfield Alternative",
-        template: "%s | Open-Higgsfield",
+        default: "Highfield — Your creative studio",
+        template: "%s | Highfield",
     },
-    description: "The open-source Higgsfield alternative for AI image and video generation with Freepik, Gemini, Vertex AI and Vercel AI Gateway.",
+    description: "An open-source creative studio for image, video and connected media engines. Choose your models, connect your providers and keep your work together.",
     keywords: [
         "AI image generator",
         "AI video generator",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     ],
     authors: [{ name: "TechBe", url: "https://techbe.me" }],
     creator: "TechBe",
-    applicationName: "Open-Higgsfield",
+    applicationName: "Highfield",
     alternates: {
         canonical: "/",
         languages: {
@@ -51,17 +51,15 @@ export const metadata: Metadata = {
     },
     openGraph: {
         type: "website",
-        url: "https://openhiggs.techbe.me",
-        siteName: "Open-Higgsfield",
-        title: "Open-Higgsfield - Open-Source Higgsfield Alternative",
+        url: "/",
+        siteName: "Highfield",
+        title: "Highfield — Your creative studio",
         description: "Generate AI images and videos across multiple providers from one free, self-hostable studio.",
-        images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "Open-Higgsfield AI image and video studio" }],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Open-Higgsfield - Open-Source Higgsfield Alternative",
+        title: "Highfield — Your creative studio",
         description: "Generate AI images and videos across multiple providers from one free, self-hostable studio.",
-        images: ["/og-image.png"],
     },
     icons: { icon: "/icon.svg" },
 };

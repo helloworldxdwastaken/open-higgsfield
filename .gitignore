@@ -68,3 +68,12 @@ next-env.d.ts
 /.claude/
 /.cursor/
 /.github/instructions/
+
+# AIMODULE private deployment data
+private-settings/
+.runtime/
+*.log
+PROJECT_MEMORY.md
+
+# Private runtime storage
+/data/

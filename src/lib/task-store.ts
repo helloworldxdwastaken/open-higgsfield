@@ -14,6 +14,7 @@ type TaskEntry = AnyTask & { events: NonNullable<AnyTask["events"]>; _done: bool
 const g = global as typeof globalThis & {
     __taskMemStore?: Map<string, TaskEntry>;
     __taskInitPromise?: Promise<void>;
+    __taskSaveQueue?: Promise<void>;
 };
 if (!g.__taskMemStore) g.__taskMemStore = new Map<string, TaskEntry>();
 const memStore = g.__taskMemStore;
@@ -70,17 +71,21 @@ async function saveTasksToFile(snapshot: AnyTask[]): Promise<void> {
     }
 }
 
+// Serialize writes so concurrent pollers never share or rename the same temporary file.
+if (!g.__taskSaveQueue) g.__taskSaveQueue = Promise.resolve();
 export async function saveTasks(): Promise<void> {
     const snapshot = buildSnapshot();
-    const results = await Promise.allSettled([
-        saveTasksToFile(snapshot),
-        persistTasks(snapshot),
-    ]);
-    for (const result of results) {
-        if (result.status === "rejected") {
-            console.error("[task-store] persistence error:", result.reason);
+    const operation = g.__taskSaveQueue!.then(async () => {
+        const results = await Promise.allSettled([
+            saveTasksToFile(snapshot),
+            persistTasks(snapshot),
+        ]);
+        for (const result of results) {
+            if (result.status === "rejected") console.error("[task-store] persistence error:", result.reason);
         }
-    }
+    });
+    g.__taskSaveQueue = operation.catch(() => {});
+    await operation;
 }
 
 function hydrateTask(row: AnyTask) {

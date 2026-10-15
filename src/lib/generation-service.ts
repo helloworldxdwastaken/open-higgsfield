@@ -1,3 +1,4 @@
+import { refreshConnections } from "@/lib/connections";
 import type { CanonicalMediaInputs, CanonicalParams } from "@/models/canonical";
 import type { ModelCapabilities } from "@/models/capabilities/types";
 import { attachGeneratedAssets } from "@/lib/generated-assets";
@@ -18,6 +19,7 @@ interface SubmitGenerationInput {
 }
 
 export async function submitGeneration(input: SubmitGenerationInput): Promise<string> {
+    refreshConnections();
     const taskId = shortId();
     const { provider, providerId, providerModelId } = resolveProvider(input.capabilities);
     const submission = await provider.submit({

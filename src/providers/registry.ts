@@ -1,4 +1,7 @@
 import type { ModelCapabilities } from "@/models/capabilities/types";
+import { HiggsfieldProvider } from "./higgsfield";
+import { OpenRouterProvider } from "./openrouter";
+import { DrawThingsProvider } from "./draw-things";
 import { FreepikProvider } from "./freepik";
 import { GoogleProvider } from "./google";
 import type { GenerationProvider, ProviderId } from "./types";
@@ -6,6 +9,9 @@ import { VercelAiGatewayProvider } from "./vercel-ai-gateway";
 
 const providers = new Map<ProviderId, GenerationProvider>([
     ["freepik", new FreepikProvider()],
+    ["higgsfield", new HiggsfieldProvider()],
+    ["openrouter", new OpenRouterProvider()],
+    ["draw-things", new DrawThingsProvider()],
     ["google-ai-studio", new GoogleProvider("google-ai-studio")],
     ["google-vertex", new GoogleProvider("google-vertex")],
     ["vercel-ai-gateway", new VercelAiGatewayProvider()],

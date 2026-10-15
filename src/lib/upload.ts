@@ -1,3 +1,4 @@
+import { refreshConnections } from "@/lib/connections";
 import fs from "fs/promises";
 import path from "path";
 import { STORAGE_ROOT } from "@/lib/storage-paths";
@@ -19,6 +20,7 @@ const DOWNLOADS_VIDEOS_DIR = path.join(DOWNLOADS_DIR, "videos");
 })();
 
 export async function uploadToTmpfiles(buffer: Buffer, filename: string, mimeType: string): Promise<string> {
+    refreshConnections();
     return uploadToCloudinary(buffer, filename, mimeType);
 }
 

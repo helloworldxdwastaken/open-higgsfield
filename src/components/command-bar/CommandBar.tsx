@@ -431,6 +431,23 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
             return resField?.options?.map((opt) => ({ id: opt, base: 0 })) ?? [];
         })();
 
+    // Workflow cards select only models present in the trusted local catalog.
+    useEffect(() => {
+        const selectModel = (event: Event) => {
+            const detail = (event as CustomEvent).detail;
+            if (!detail || typeof detail.modelId !== "string") return;
+            if (detail.mediaType === "video" && Object.hasOwn(VIDEO_CAPABILITIES, detail.modelId)) {
+                onModeChange("video");
+                const caps = VIDEO_CAPABILITIES[detail.modelId];
+                handleVideoModelChange(detail.modelId, caps.resolution_variant ? caps.resolution_variant.default || caps.resolution_variant.options?.[0] || "" : "");
+            } else if (detail.mediaType === "image" && Object.hasOwn(IMAGE_CAPABILITIES, detail.modelId)) {
+                onModeChange("image"); handleImageModelChange(detail.modelId);
+            }
+        };
+        window.addEventListener("highfield:select-model", selectModel);
+        return () => window.removeEventListener("highfield:select-model", selectModel);
+    }, [handleVideoModelChange, handleImageModelChange, onModeChange]);
+
     const onSubmit = async (data: FormData) => {
         setApiError(null);
         if (mode === "video") {
