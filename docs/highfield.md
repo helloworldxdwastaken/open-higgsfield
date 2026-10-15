@@ -1,5 +1,19 @@
 # Highfield integration status
 
+## Product direction
+
+Build Highfield as our own creative platform by extending this fork. The existing interface, provider adapters, generation jobs, history and local Director are the foundation for further development. Keep the repository name `open-higgsfield` and preserve upstream attribution.
+
+Highfield will own its projects, shot plans, reference assets, presets and workflow orchestration. Each workflow will use a compatible, explicitly selected local engine or cloud provider. The native Higgsfield API remains an optional connection; our independently implemented workflows must also work with other compatible engines. Voicebox remains the audio foundation, with voice assets to be integrated into Highfield projects.
+
+The next development stage is one complete project workflow:
+
+1. Save a project and turn its brief into an editable shot plan using Director.
+2. Generate its shots through the existing provider and job system, retaining references, progress and revisions.
+3. Add Voicebox narration and assemble an export from the completed media.
+
+This is the development direction, not a list of completed features. Build and verify that complete workflow before expanding the separate reference-edit, Canvas and Ads workflows. New workflows should share the existing jobs and asset storage.
+
 ## Implemented interface and routing
 
 The repository remains `open-higgsfield`; visible application branding is Highfield. Public Higgsfield navigation and workflow concepts informed an independently authored interface. Retain upstream attribution in LICENSE. Publicly visible shells do not establish that every authenticated workflow has been reproduced.

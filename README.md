@@ -2,6 +2,8 @@
 
 Highfield is a self-hosted creative studio fork of [TechBeme/open-higgsfield](https://github.com/TechBeme/open-higgsfield). The repository keeps its original name and MIT license. The interface is independently authored from public product references; this project is unaffiliated with Higgsfield.
 
+We are extending this foundation into our own creative platform, starting with a complete project workflow that connects shot planning, media generation, Voicebox narration and export. See the [product direction and current implementation status](docs/highfield.md).
+
 The original 40 curated image/video models remain available. This fork adds a Highfield Explore interface, private provider settings, optional Higgsfield Genjutsu/Cinema adapters, OpenRouter media discovery, local engine discovery, a local shot planner, and a read-only MCP endpoint. Cloud providers require your own credentials and may charge for generation. Model access and pricing come from each provider.
 
 Use **Connections** for credentials, **Engines** for live provider discovery, and **Director** for shot planning with LM Studio or Ollama. A local planning model does not supply a video generation engine. Audio can link to a separately hosted Voicebox instance using `HIGHFIELD_AUDIO_URL`.
