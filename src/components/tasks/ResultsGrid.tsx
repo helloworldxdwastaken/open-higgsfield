@@ -455,7 +455,7 @@ function ImageResultCard({
                     >
                         <div className="flex items-start justify-end gap-1 min-w-0">
                             <div className="flex items-center gap-1.5 shrink-0">
-                                <a href={`/api/download/${task.task_id}?index=${idx}`} download onClick={(e) => e.stopPropagation()} className="w-[34px] h-[34px] rounded-full grid place-items-center text-white" style={{ background: "rgba(0,0,0,.5)", backdropFilter: "blur(8px)" }}>
+                                <a href={url} download onClick={(e) => e.stopPropagation()} className="w-[34px] h-[34px] rounded-full grid place-items-center text-white" style={{ background: "rgba(0,0,0,.5)", backdropFilter: "blur(8px)" }}>
                                     <Download className="h-3.5 w-3.5" />
                                 </a>
                                 <button onClick={(e) => { e.stopPropagation(); onDelete(task.task_id); }} className="w-[34px] h-[34px] rounded-full grid place-items-center text-white hover:text-red-400" style={{ background: "rgba(0,0,0,.5)", backdropFilter: "blur(8px)" }}>

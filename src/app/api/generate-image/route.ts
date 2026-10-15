@@ -10,6 +10,11 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
+  try { return await generateImage(req); }
+  catch (error) { return NextResponse.json({ error: publicErrorMessage(error) }, { status: 500 }); }
+}
+
+async function generateImage(req: NextRequest) {
   const form = await req.formData();
 
   // ── Model lookup ──────────────────────────────────────────────────────────

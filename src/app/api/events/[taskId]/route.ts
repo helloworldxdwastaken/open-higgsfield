@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { getTask, initStore } from "@/lib/task-store";
+import { PRIVATE_MEDIA_HEADERS, toPublicTaskEvent } from "@/lib/public-tasks";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -15,7 +16,7 @@ export async function GET(
   if (!task) {
     return new Response(JSON.stringify({ error: "Task not found" }), {
       status: 404,
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...PRIVATE_MEDIA_HEADERS },
     });
   }
 
@@ -35,7 +36,7 @@ export async function GET(
 
         const events = current.events ?? [];
         while (sent < events.length) {
-          const evt = events[sent];
+          const evt = toPublicTaskEvent(current, events[sent]);
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(evt)}\n\n`));
           sent++;
           const done = ["completed", "failed", "timeout", "error"].includes(evt.type);
@@ -65,7 +66,7 @@ export async function GET(
   return new Response(stream, {
     headers: {
       "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
+      ...PRIVATE_MEDIA_HEADERS,
       "X-Accel-Buffering": "no",
       Connection: "keep-alive",
     },

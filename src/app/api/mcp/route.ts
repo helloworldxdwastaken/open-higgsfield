@@ -3,6 +3,7 @@ import { IMAGE_CAPABILITIES } from "@/models/capabilities/image";
 import { VIDEO_CAPABILITIES } from "@/models/capabilities/video";
 import { connectionStatus } from "@/lib/connections";
 import { getImageTasks, getVideoTasks, getTask, initStore } from "@/lib/task-store";
+import { toPublicTask } from "@/lib/public-tasks";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,8 +18,9 @@ const tools = [
 
 function summarize(task: ReturnType<typeof getTask>) {
     if (!task) return null;
-    return { task_id: task.task_id, status: task.status, media_type: task.media_type, model_id: task.model_id, created_at: task.created_at, prompt: task.prompt,
-        downloads: task.status === "COMPLETED" ? task.media_type === "image" ? task.result_paths?.map((_, index) => `/api/download/${task.task_id}?index=${index}`) : [`/api/download/${task.task_id}`] : [], error: task.error_message };
+    const safe = toPublicTask(task);
+    return { task_id: safe.task_id, status: safe.status, media_type: safe.media_type, model_id: safe.model_id, created_at: safe.created_at, prompt: safe.prompt,
+        downloads: safe.has_download ? safe.media_type === "image" ? safe.result_urls : safe.video_urls : [], error: safe.error_message };
 }
 
 export async function POST(request: NextRequest) {

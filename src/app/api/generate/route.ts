@@ -12,6 +12,11 @@ export const runtime = "nodejs";
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
+  try { return await generateVideo(req); }
+  catch (error) { return NextResponse.json({ error: publicErrorMessage(error) }, { status: 500 }); }
+}
+
+async function generateVideo(req: NextRequest) {
   const origin = req.headers.get("origin");
   if (!origin || origin !== process.env.STUDIO_PUBLIC_ORIGIN) return NextResponse.json({ error: "Studio origin required." }, { status: 403 });
   const form = await req.formData();
@@ -109,14 +114,14 @@ export async function POST(req: NextRequest) {
           url = result.remoteUrl;
         }
       } catch (e) {
-        return NextResponse.json({ error: `Upload failed for ${slot.label}: ${e}` }, { status: 400 });
+        return NextResponse.json({ error: publicErrorMessage(e, "ERR_UPLOAD_FAILED") }, { status: 400 });
       }
     } else if (url) {
       try {
         const resolved = await resolveUrl(url);
         url = resolved.remoteUrl;
       } catch (e) {
-        return NextResponse.json({ error: `Failed to resolve upload: ${e}` }, { status: 400 });
+        return NextResponse.json({ error: publicErrorMessage(e, "ERR_UPLOAD_RESOLVE_FAILED") }, { status: 400 });
       }
     }
 

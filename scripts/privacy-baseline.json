@@ -1,0 +1,11 @@
+[
+  {
+    "scope": "third_party/higgsfield-skills",
+    "commit": "f83af0bc1d937c8119099a11f8ebbf5e6fb99819",
+    "file": "higgsfield-websites/references/security.md",
+    "line": 354,
+    "rule": "generic-api-key",
+    "sha256": "d43c413dae97c2b503345fc2f0399b8431c78f936187d953e8698ae62ffe66b1",
+    "reason": "Reviewed upstream dummy credential in an explicitly labelled bad security example. This exception matches only this immutable commit or exact current file hash, rule and line."
+  }
+]

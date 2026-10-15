@@ -77,3 +77,22 @@ PROJECT_MEMORY.md
 
 # Private runtime storage
 /data/
+
+# Local identity, exports and recovery data
+/.ssh/
+/.aws/
+/.kube/
+/.npmrc
+/.pypirc
+/backups/
+/sessions/
+/accounts/
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.dump
+*.bak
+cookies*.txt
+.privacy-denylist.json

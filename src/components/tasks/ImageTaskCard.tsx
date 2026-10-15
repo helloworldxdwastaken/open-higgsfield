@@ -148,7 +148,7 @@ export function ImageTaskCard({ task, onDelete, onReuse, onLightbox }: ImageTask
       <div className="flex gap-2 px-4 pb-3">
         {images.length > 0 && images.map((url, idx) =>
           images.length === 1 ? (
-            <a key={idx} href={`/api/download/${task.task_id}?index=0`} download target="_blank" rel="noreferrer"
+            <a key={idx} href={url} download target="_blank" rel="noreferrer"
               className={buttonVariants({ variant: "outline", size: "sm" }) + " h-7 text-xs gap-1.5"}>
               <Download className="h-3 w-3" />
               {t("downloadImage")}

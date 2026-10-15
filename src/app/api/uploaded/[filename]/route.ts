@@ -3,6 +3,7 @@ import path from "path";
 import fs from "fs";
 import mime from "mime-types";
 import { STORAGE_ROOT } from "@/lib/storage-paths";
+import { PRIVATE_MEDIA_HEADERS } from "@/lib/public-tasks";
 
 const UPLOADS_DIR = path.join(STORAGE_ROOT, "uploads");
 
@@ -16,7 +17,7 @@ export async function GET(
   const filePath = path.join(UPLOADS_DIR, safe);
 
   if (!fs.existsSync(filePath)) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ error: "Not found" }, { status: 404, headers: PRIVATE_MEDIA_HEADERS });
   }
 
   const buf = fs.readFileSync(filePath);
@@ -25,7 +26,9 @@ export async function GET(
   return new NextResponse(buf, {
     headers: {
       "Content-Type": mimeType,
-      "Cache-Control": "public, max-age=86400",
+      ...PRIVATE_MEDIA_HEADERS,
+      "X-Content-Type-Options": "nosniff",
+      "Content-Security-Policy": "default-src 'none'; sandbox",
     },
   });
 }
