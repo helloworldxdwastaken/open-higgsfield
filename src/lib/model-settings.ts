@@ -33,6 +33,7 @@ const videoChoices = Object.values(VIDEO_CAPABILITIES).map(model => ({
 export const ADMIN_MODEL_FEATURES: AdminModelFeature[] = [
     { feature: "image_generation", label: "Image generation", mode: "catalog", choices: imageChoices },
     { feature: "video_generation", label: "Video generation", mode: "catalog", choices: videoChoices },
+    { feature: "ads_generation", label: "Ads Studio", mode: "catalog", choices: imageChoices },
     { feature: "influencer_generation", label: "Influencer", mode: "catalog", choices: videoChoices },
     { feature: "supercomputer_generation", label: "Supercomputer", mode: "catalog", choices: videoChoices },
     { feature: "katana_generation", label: "Katana reference video", mode: "catalog", choices: videoChoices },

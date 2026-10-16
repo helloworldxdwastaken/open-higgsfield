@@ -79,6 +79,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
     });
     const [imageFieldValues, setImageFieldValues] = useState<Record<string, unknown>>({});
     const [slotFiles, setSlotFiles] = useState<Record<string, File[]>>({});
+    const [imageWorkflow, setImageWorkflow] = useState("");
 
     // ── Shared state ──
     const [apiError, setApiError] = useState<string | null>(null);
@@ -358,6 +359,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
         setSlotFiles((current) => remapSlotFilesOnModelSwitch(current, previousSlots, nextSlots));
 
         setImageModelId(id);
+        setImageWorkflow("");
         // Preserve field values for fields that exist in both old and new model (same id + type)
         setImageFieldValues((prev) => {
             const prevModel = IMAGE_CAPABILITIES[imageModelId] ?? IMAGE_CAPABILITIES[firstImageId];
@@ -470,6 +472,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
                 handleVideoModelChange(detail.modelId, caps.resolution_variant ? caps.resolution_variant.default || caps.resolution_variant.options?.[0] || "" : "");
             } else if (detail.mediaType === "image" && Object.hasOwn(IMAGE_CAPABILITIES, detail.modelId)) {
                 onModeChange("image"); handleImageModelChange(detail.modelId);
+                if (detail.workflowFeature === "ads_generation") setImageWorkflow("ads_generation");
             }
         };
         window.addEventListener("highfield:select-model", selectModel);
@@ -502,6 +505,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
         } else {
             const body = new FormData();
             body.append("model_id", imageModelId);
+            body.append("workflow", imageWorkflow);
             body.append("prompt", data.prompt);
             body.append("size_aspect", sizeAspect);
             body.append("size_resolution", sizeResolution);

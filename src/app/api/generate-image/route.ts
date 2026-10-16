@@ -22,7 +22,9 @@ async function generateImage(req: NextRequest, userId: string) {
   const form = await req.formData();
 
   // ── Model lookup ──────────────────────────────────────────────────────────
-  const modelId = String(form.get("model_id") ?? "").trim() || await getFeatureModel("image_generation") || "";
+  const workflow = String(form.get("workflow") ?? "").trim();
+  const defaultFeature = workflow === "ads_generation" ? workflow : "image_generation";
+  const modelId = String(form.get("model_id") ?? "").trim() || await getFeatureModel(defaultFeature) || "";
   const caps = IMAGE_CAPABILITIES[modelId];
   if (!caps) {
     return NextResponse.json({ error: `ERR_UNKNOWN_IMAGE_MODEL: ${modelId}` }, { status: 400 });
