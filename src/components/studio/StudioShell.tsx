@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { ArrowDownToLine, ArrowUpRight, ChevronRight, Film, Grid2X2, Image as ImageIcon, Layers3, SlidersHorizontal, Sparkles, Video, X } from "lucide-react";
+import { ArrowDownToLine, ArrowUpRight, AudioLines, ChevronRight, Code2, Film, Grid2X2, Image as ImageIcon, Layers3, SlidersHorizontal, Sparkles, Video, X } from "lucide-react";
 import { CommandBar } from "@/components/command-bar/CommandBar";
 import { ResultsGrid } from "@/components/tasks/ResultsGrid";
-import { IMAGE_CAPABILITIES } from "@/models/capabilities/image";
 import { VIDEO_CAPABILITIES } from "@/models/capabilities/video";
 import { FeatureArt } from "@/components/highfield/FeatureArt";
 import { StudioDialog, type DialogContent } from "@/components/highfield/StudioDialog";
@@ -45,8 +44,6 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
   const [studioBannerVisible, setStudioBannerVisible] = useState(true);
   const [videoTab, setVideoTab] = useState<"create" | "motion">("create");
   const [modelSelection, setModelSelection] = useState<{ modelId: string; revision: number } | null>(null);
-  const imageCount = Object.keys(IMAGE_CAPABILITIES).length;
-  const videoCount = Object.keys(VIDEO_CAPABILITIES).length;
   const prefix = `/${locale}`;
 
   useEffect(() => {
@@ -137,13 +134,23 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
       <main id="highfield-workspace" className="hf-main" tabIndex={-1}>
         {view === "explore" ? (
           <div className="hf-explore">
-            <div className="hf-explore-intro"><div><span className="hf-eyebrow">THE CREATIVE POSSIBILITIES</span><h1>What will you make?</h1></div><span className="hf-own-studio"><span />Your models. Your studio.</span></div>
-            <section className="hf-feature-grid" aria-label="Featured creative studios">{workflows.slice(0, 3).map((workflow, index) => <button key={workflow.id} className={`hf-feature hf-feature-${workflow.art} ${index === 0 ? "hf-feature-large" : ""}`} onClick={() => openWorkflow(workflow)}><FeatureArt kind={workflow.art} /><span className="hf-feature-topline"><span>{workflow.eyebrow}</span><ArrowUpRight size={19} /></span><span className="hf-feature-copy"><span className="hf-feature-status">API CONNECTION</span><strong>{workflow.title}</strong><span>{workflow.description}</span></span></button>)}</section>
-            <section className="hf-create-section" aria-labelledby="hf-create-title"><div className="hf-section-heading"><h2 id="hf-create-title">Start creating</h2><span>One workspace. The engines you choose.</span></div><div className="hf-creation-grid"><button className="hf-create-card" onClick={() => navigate("create", "image")}><span className="hf-create-icon"><ImageIcon size={22} /></span><span><strong>Create image</strong><span>{imageCount} curated models · references & edits</span></span><ArrowUpRight size={18} /></button><button className="hf-create-card" onClick={() => navigate("create", "video")}><span className="hf-create-icon"><Film size={22} /></span><span><strong>Create video</strong><span>{videoCount} curated models · motion & scenes</span></span><ArrowUpRight size={18} /></button><Link className="hf-create-card" href={`${prefix}/providers`}><span className="hf-create-icon"><Layers3 size={22} /></span><span><strong>Connect an engine</strong><span>Discover cloud & local connections</span></span><ArrowUpRight size={18} /></Link></div></section>
-            <section className="hf-workflow-section" aria-labelledby="hf-workflows-title"><div className="hf-section-heading"><h2 id="hf-workflows-title">More ways to create</h2><span>Explore each workflow and its availability</span></div><div className="hf-workflow-grid">{workflows.slice(3).map(workflow => <button key={workflow.id} className={`hf-workflow-card hf-workflow-${workflow.art}`} onClick={() => openWorkflow(workflow)}><div className="hf-workflow-art"><FeatureArt kind={workflow.art} /><span className="hf-workflow-badge">Not connected</span></div><div className="hf-workflow-copy"><div><strong>{workflow.title}</strong><p>{workflow.description}</p></div><ChevronRight size={18} /></div></button>)}</div></section>
+            <section className="hf-hero-grid" aria-label="Featured studios">{workflows.slice(0, 3).map(workflow => (
+              <button key={workflow.id} className="hf-hero-card" onClick={() => openWorkflow(workflow)}>
+                <div className="hf-hero-art"><FeatureArt kind={workflow.art} /><span className="hf-hero-badge">{workflow.modelId ? "API CONNECTION" : "NOT CONNECTED"}</span></div>
+                <strong>{workflow.title}</strong>
+                <span>{workflow.description}</span>
+              </button>
+            ))}</section>
+            <section className="hf-feature-cards" aria-label="Studio features">
+              <button className="hf-feature-card" onClick={() => { router.push(`${prefix}/cinema`); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Film size={17} /></span><span className="hf-feature-card-badge">New</span></div><strong>Cinema Studio 4.0</strong><span>Create cinematic scenes effortlessly with saved projects and shot planning.</span></button>
+              <button className="hf-feature-card" onClick={() => { selectVideoTab("motion"); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Video size={17} /></span><span className="hf-feature-card-badge">API</span></div><strong>Genjutsu Motion Transfer</strong><span>One video in. A new perspective out, with the same motion.</span></button>
+              <button className="hf-feature-card" onClick={() => openWorkflow(workflows[2])}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Layers3 size={17} /></span><span className="hf-feature-card-badge">API</span></div><strong>Genjutsu Object Swap</strong><span>Reimagine the subject inside your shot with a direct API call.</span></button>
+              <button className="hf-feature-card" onClick={openApi}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Code2 size={17} /></span></div><strong>MCP for local agents</strong><span>Read-only tools for model discovery and job history, exposed at /api/mcp.</span></button>
+              <button className="hf-feature-card" onClick={openAudio}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><AudioLines size={17} /></span></div><strong>Voicebox audio</strong><span>Voice creation, profiles and narration through your connected audio studio.</span></button>
+              <button className="hf-feature-card" onClick={() => { router.push(`${prefix}/presets`); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Sparkles size={17} /></span><span className="hf-feature-card-badge">New</span></div><strong>Visual Effects</strong><span>45 effect drafts with curated prompt interpretations and public examples.</span></button>
+            </section>
             <aside className="hf-provider-banner"><div className="hf-banner-symbol"><Sparkles size={24} /></div><div><strong>A studio that works your way.</strong><p>Connect direct providers, discover models and keep your generations in one library.</p></div><Link href={`${prefix}/connections`}>Manage connections<ArrowUpRight size={15} /></Link></aside>
-            <footer className="hf-footer"><span>Highfield · Open-source creative studio</span><a href="https://github.com/helloworldxdwastaken/open-higgsfield" target="_blank" rel="noopener noreferrer">Fork of Open-Higgsfield<ArrowUpRight size={12} /></a></footer>
-          </div>
+            <footer className="hf-footer"><span>Highfield · Open-source creative studio</span><a href="https://github.com/helloworldxdwastaken/open-higgsfield" target="_blank" rel="noopener noreferrer">Fork of Open-Higgsfield<ArrowUpRight size={12} /></a></footer></div>
         ) : (
           <div className={`hf-studio-workspace ${view === "create" && mode === "video" ? "hf-video-mode" : ""}`}>
             {view === "library" ? (
