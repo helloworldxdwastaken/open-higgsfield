@@ -94,3 +94,17 @@
 @media(prefers-reduced-motion:reduce){.hf-feature,.hf-workflow-art>.hf-art,.hf-create-card{transition:none!important}.hf-feature:hover{transform:none}}
 .hf-dialog-endpoint{margin-top:19px;padding:12px 13px;border:1px solid #33373a;background:#121517;border-radius:6px}.hf-dialog-endpoint span{display:block;color:#8f959a;font-size:9px;margin-bottom:7px}.hf-dialog-endpoint code{font-size:11px;line-height:1.6;color:#e6e8ea;overflow-wrap:anywhere;user-select:all}
 @media(max-width:600px){.hf-composer form>div:nth-child(2){flex-direction:column!important;gap:9px!important}.hf-composer form>div:nth-child(2)>button[type=submit]{width:100%!important;min-height:37px!important;border-radius:10px!important;font-size:13px!important;display:flex;justify-content:center;align-items:center;gap:7px;box-shadow:none!important;letter-spacing:-.01em!important}.hf-composer form>div:nth-child(2)>button[type=submit] small{margin:0!important;font-size:8px!important}.hf-composer form>div:nth-child(2)>div:first-child>div:last-child{margin-top:8px!important}}
+
+.hf-login{min-height:100vh;display:grid;place-items:center;background:#0f1113;color:#f7f7f8;font-family:var(--font-inter),sans-serif;padding:24px}
+.hf-login-card{width:min(400px,100%);padding:36px 32px;border-radius:14px;border:1px solid #242627;background:#131517;display:flex;flex-direction:column;gap:14px}
+.hf-login-card h1{font-family:var(--font-space-grotesk),sans-serif;font-size:24px;font-weight:700;letter-spacing:-.02em;margin:6px 0 0}
+.hf-login-sub{color:#9a9ea3;font-size:13px;line-height:1.6;margin:0}
+.hf-login-form{display:flex;flex-direction:column;gap:12px;margin-top:8px}
+.hf-login-form label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#c9cdd1;font-weight:500}
+.hf-login-form input{height:40px;padding:0 12px;border-radius:9px;border:1px solid #33373a;background:#0f1113;color:#f7f7f8;font-size:14px}
+.hf-login-form input:focus-visible{outline:2px solid rgba(209,254,23,.5);outline-offset:1px;border-color:#4a4f54}
+.hf-login-submit{height:40px;border:none;border-radius:9px;background:#d1fe17;color:#131309;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px}
+.hf-login-submit:hover{background:#e5fe56}
+.hf-login-submit:disabled{opacity:.6;cursor:wait}
+.hf-login-error{margin:0;color:#ffc4c4;font-size:12px;line-height:1.5}
+.hf-login-card .hf-brand-mark{margin-bottom:4px}
