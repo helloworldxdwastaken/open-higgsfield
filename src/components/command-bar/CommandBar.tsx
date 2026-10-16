@@ -90,6 +90,21 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const dragDepthRef = useRef(0);
 
+    useEffect(() => {
+        const url = new URL(window.location.href);
+        if (url.searchParams.get("recipeDraft") !== "1") return;
+        try {
+            const stored = sessionStorage.getItem("highfield:recipe-draft");
+            const draft = stored ? JSON.parse(stored) : null;
+            if (draft && draft.mediaType === mode && typeof draft.prompt === "string" && draft.prompt.length <= 2000) {
+                setValue("prompt", draft.prompt, { shouldDirty: true });
+                sessionStorage.removeItem("highfield:recipe-draft");
+                url.searchParams.delete("recipeDraft");
+                window.history.replaceState(null, "", url);
+            }
+        } catch { /* A blocked/stale browser draft never submits a generation. */ }
+    }, [mode, setValue]);
+
     const autoResize = useCallback(() => {
         const el = textareaRef.current;
         if (!el) return;

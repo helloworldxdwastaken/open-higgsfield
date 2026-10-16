@@ -100,7 +100,8 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
           <button className={view === "create" && mode === "video" ? "is-active" : ""} onClick={() => navigate("create", "video")} aria-current={view === "create" && mode === "video" ? "page" : undefined}><Video size={15} />Video</button>
           {audioStudioUrl ? <a href={audioStudioUrl}><AudioLines size={15} />Audio<ArrowUpRight size={11} className="hf-nav-external" /></a> : <button onClick={openAudio}><AudioLines size={15} />Audio</button>}
           <button className={view === "library" ? "is-active" : ""} onClick={() => navigate("library")} aria-current={view === "library" ? "page" : undefined}><Library size={15} />Library</button>
-          <Link href={`${prefix}/director`}><Sparkles size={15} />Director</Link>
+           <Link href={`${prefix}/director`}><Sparkles size={15} />Director</Link>
+           <Link href={`${prefix}/skills`}><Layers3 size={15} />Skills</Link>
           <button onClick={openApi}><Code2 size={15} />MCP / API</button>
         </nav>
         <div className="hf-header-actions"><Link href={`${prefix}/providers`} className="hf-engine-link"><span className="hf-status-dot" />Providers</Link><Link href={`${prefix}/connections`} className="hf-connections-link" aria-label="Manage provider connections"><SlidersHorizontal size={16} /><span>Connections</span></Link></div>
