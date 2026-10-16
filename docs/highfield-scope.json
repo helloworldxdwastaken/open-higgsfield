@@ -267,14 +267,18 @@
       "key": "effects-presets",
       "title": "Effects and preset catalog",
       "in_scope": true,
-      "state": "planned",
+      "state": "partial",
       "phase": 2,
       "depends_on": [
         "HF-005",
         "HF-007",
         "HF-009"
       ],
-      "current_evidence": [],
+      "current_evidence": [
+        "src/app/[locale]/presets/ and src/content/effect-presets.json:45 public showcase entries with independently authored image/video prompt interpretations",
+        "Private example-image cache and source attribution; public pictures are examples, never automatic generation inputs",
+        "Exact private Higgsfield preset workflows and generation-fidelity verification remain unimplemented"
+      ],
       "deliverables": [
         "Searchable/versioned image, video, motion, marketing and style presets",
         "Licensed or original previews and explicit reference slots",

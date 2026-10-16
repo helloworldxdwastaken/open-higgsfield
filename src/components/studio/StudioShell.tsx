@@ -105,7 +105,8 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
           <button className={view === "library" ? "is-active" : ""} onClick={() => navigate("library")} aria-current={view === "library" ? "page" : undefined}><Library size={15} />Library</button>
            <Link href={`${prefix}/director`}><Sparkles size={15} />Director</Link>
            <Link href={`${prefix}/cinema`}><Film size={15} />Cinema</Link>
-           <Link href={`${prefix}/skills`}><Layers3 size={15} />Skills</Link>
+            <Link href={`${prefix}/skills`}><Layers3 size={15} />Skills</Link>
+            <Link href={`${prefix}/presets`}><Sparkles size={15} />Presets</Link>
           <button onClick={openApi}><Code2 size={15} />MCP / API</button>
         </nav>
         <div className="hf-header-actions"><Link href={`${prefix}/providers`} className="hf-engine-link"><span className="hf-status-dot" />Providers</Link><Link href={`${prefix}/connections`} className="hf-connections-link" aria-label="Manage provider connections"><SlidersHorizontal size={16} /><span>Connections</span></Link></div>
