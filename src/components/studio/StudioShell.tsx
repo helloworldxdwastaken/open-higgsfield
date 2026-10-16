@@ -42,6 +42,7 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
   const [view, setView] = useState<StudioView>(initialView);
   const [dialog, setDialog] = useState<DialogContent | null>(null);
   const [promoVisible, setPromoVisible] = useState(true);
+  const [studioBannerVisible, setStudioBannerVisible] = useState(true);
   const [modelSelection, setModelSelection] = useState<{ modelId: string; revision: number } | null>(null);
   const imageCount = Object.keys(IMAGE_CAPABILITIES).length;
   const videoCount = Object.keys(VIDEO_CAPABILITIES).length;
@@ -134,7 +135,18 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
           </div>
         ) : (
           <div className="hf-studio-workspace">
-            <div className="hf-workspace-heading"><div><span className="hf-eyebrow">{view === "library" ? "YOUR CREATIVE ARCHIVE" : "CREATE SOMETHING NEW"}</span><h1>{view === "library" ? "Your library" : mode === "video" ? "Video studio" : "Image studio"}</h1></div><div className="hf-workspace-controls">{view === "library" ? <div className="hf-library-tabs" aria-label="Library media type"><button className={mode === "image" ? "is-active" : ""} onClick={() => navigate("library", "image")} aria-pressed={mode === "image"}><ImageIcon size={14} />Images</button><button className={mode === "video" ? "is-active" : ""} onClick={() => navigate("library", "video")} aria-pressed={mode === "video"}><Video size={14} />Videos</button></div> : <button className="hf-subtle-button" onClick={() => navigate("library")}><Grid2X2 size={14} />View library<ChevronRight size={13} /></button>}</div></div>
+            {view === "create" && studioBannerVisible && (
+              <div className="hf-studio-banner" role="region" aria-label="Feature announcement">
+                <div className="hf-studio-banner-copy"><span>Bring your stories to life</span><span>Create cinematic shots from prompts</span></div>
+                <button className="hf-studio-banner-cta" onClick={() => { router.push(`${prefix}/cinema`); }}>Open Cinema Studio</button>
+                <button className="hf-studio-banner-close" aria-label="Dismiss banner" onClick={() => setStudioBannerVisible(false)}><X size={14} /></button>
+              </div>
+            )}
+            {view === "library" ? (
+              <div className="hf-workspace-heading"><div><span className="hf-eyebrow">YOUR CREATIVE ARCHIVE</span><h1>Your library</h1></div><div className="hf-workspace-controls"><div className="hf-library-tabs" aria-label="Library media type"><button className={mode === "image" ? "is-active" : ""} onClick={() => navigate("library", "image")} aria-pressed={mode === "image"}><ImageIcon size={14} />Images</button><button className={mode === "video" ? "is-active" : ""} onClick={() => navigate("library", "video")} aria-pressed={mode === "video"}><Video size={14} />Videos</button></div></div></div>
+            ) : (
+              <div className="hf-workspace-heading hf-workspace-heading-compact"><div className="hf-workspace-controls"><button className="hf-subtle-button" onClick={() => navigate("library")}><Grid2X2 size={14} />View library<ChevronRight size={13} /></button></div></div>
+            )}
             <div className="hf-results-region"><ResultsGrid mode={mode} /></div>
             {view === "library" && <div className="hf-library-footer"><ArrowDownToLine size={14} /><span>Completed generations can be previewed and downloaded from their cards.</span><button onClick={() => navigate("create")}>Create {mode}<ArrowUpRight size={14} /></button></div>}
           </div>

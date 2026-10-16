@@ -89,15 +89,23 @@ export function ResultsGrid({ mode }: ResultsGridProps) {
         <div className="h-full overflow-y-auto" style={{ paddingBottom: 296 }}>
             {isEmpty ? (
                 <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,.04)" }}>
-                        <Inbox className="h-8 w-8" style={{ color: "rgba(244,247,251,.24)" }} />
-                    </div>
-                    <div>
-                        <p className="text-sm font-medium" style={{ color: "rgba(244,247,251,.44)" }}>{t("empty")}</p>
-                        <p className="text-xs mt-1" style={{ color: "rgba(244,247,251,.28)" }}>
-                            {mode === "video" ? "Generate a video to see results here" : "Generate an image to see results here"}
-                        </p>
-                    </div>
+                    {mode === "image" ? (
+                        <>
+                            <div className="hf-empty-collage" aria-hidden="true"><i /><i /><i /><i /></div>
+                            <div className="hf-empty-heading"><span>Start creating with</span><span className="hf-empty-accent">Cinema Studio 4.0</span></div>
+                            <p className="hf-empty-sub">Describe a scene, character, mood, or style — and watch it come to life</p>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,.04)" }}>
+                                <Inbox className="h-8 w-8" style={{ color: "rgba(244,247,251,.24)" }} />
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium" style={{ color: "rgba(244,247,251,.44)" }}>{t("empty")}</p>
+                                <p className="text-xs mt-1" style={{ color: "rgba(244,247,251,.28)" }}>Generate a video to see results here</p>
+                            </div>
+                        </>
+                    )}
                 </div>
             ) : (
                 <div className="p-5">
