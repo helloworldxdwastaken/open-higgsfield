@@ -1,4 +1,4 @@
-import { Pool } from "@neondatabase/serverless";
+import { Pool } from "pg";
 
 export type SqlRow = Record<string, unknown>;
 export type SqlClient = (strings: TemplateStringsArray, ...values: unknown[]) => Promise<SqlRow[]>;
@@ -18,6 +18,7 @@ export function getSql(): SqlClient {
     const databaseUrl = process.env.DATABASE_URL;
     if (!databaseUrl) throw new Error("DATABASE_URL is not configured");
     const pool = new Pool({ connectionString: databaseUrl, max: 5 });
+    pool.on("error", () => {});
     databaseGlobal.__highfieldSqlPool = pool;
     databaseGlobal.__highfieldSqlClient = async (strings, ...values) => {
         const query = strings.reduce((text, part, index) => `${text}${index ? `$${index}` : ""}${part}`, "");
