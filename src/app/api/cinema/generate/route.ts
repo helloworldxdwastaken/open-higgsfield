@@ -3,6 +3,7 @@ import { cinemaSubmissionStatus, generateCinemaShot, type CinemaGenerateInput } 
 import { getCinemaProject } from "@/lib/cinema-store";
 import { publicErrorMessage } from "@/lib/public-error";
 import { getRequestSessionUser } from "@/lib/users";
+import { getFeatureModel } from "@/lib/model-settings";
 import { cinemaBody } from "../projects/_shared";
 
 export const runtime = "nodejs";
@@ -15,6 +16,7 @@ export async function POST(request: NextRequest) {
         if (!user) return NextResponse.json({ error: "ERR_AUTHENTICATION_REQUIRED" }, { status: 401, headers });
         const body = await cinemaBody(request);
         projectId = typeof body?.projectId === "string" ? body.projectId : undefined;
+        if (body && body.engine === "catalog" && !body.modelId) body.modelId = await getFeatureModel("cinema_generation") || "";
         return NextResponse.json(await generateCinemaShot({ ...(body as unknown as CinemaGenerateInput), userId: user.id }), { headers });
     } catch (error) {
         const code = publicErrorMessage(error, "ERR_CINEMA_VALIDATION");

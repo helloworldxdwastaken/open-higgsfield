@@ -159,12 +159,16 @@ export function CinemaStudio() {
             finally { if (active) setLoading(false); }
         })();
         (async () => {
-            const results = await Promise.allSettled([api<{ models: ModelCapabilities[] }>("/api/image-models"), api<{ models: Record<string, ModelCapabilities> }>("/api/models"), api<{ fields: { name: string; configured: boolean }[] }>("/api/connections")]);
+            const results = await Promise.allSettled([api<{ models: ModelCapabilities[] }>("/api/image-models"), api<{ models: Record<string, ModelCapabilities> }>("/api/models"), api<{ fields: { name: string; configured: boolean }[] }>("/api/connections"), api<{ settings: Record<string, string | null> }>("/api/model-defaults")]);
             if (!active) return;
             if (results[0].status === "fulfilled" && results[1].status === "fulfilled") setCatalogs({ image: catalogOptions(results[0].value.models), video: catalogOptions(Object.values(results[1].value.models)) });
             else setCatalogError("The curated model catalog could not be loaded. Refresh the model list.");
             if (results[2].status === "fulfilled") setConfigured(Object.fromEntries(results[2].value.fields.map(field => [field.name, field.configured])));
             else setConnectionError(true);
+            if (results[3].status === "fulfilled") {
+                const defaultModel = results[3].value.settings.cinema_generation;
+                if (defaultModel) setModelId(defaultModel);
+            }
         })();
         return () => { active = false; };
     }, [adopt]);
