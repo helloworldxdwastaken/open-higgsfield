@@ -1,7 +1,7 @@
 import { refreshConnections } from "@/lib/connections";
 import fs from "fs/promises";
 import path from "path";
-import { STORAGE_ROOT } from "@/lib/storage-paths";
+import { STORAGE_ROOT, userDownloadsDir, userUploadsDir, USER_STORAGE_ID_PATTERN } from "@/lib/storage-paths";
 
 function shortId() {
     return Math.random().toString(36).slice(2, 16);
@@ -67,21 +67,29 @@ async function uploadToCloudinary(buffer: Buffer, filename: string, mimeType: st
     return data.secure_url;
 }
 
-export async function saveInputLocally(buffer: Buffer, ext: string): Promise<string> {
+export async function saveInputLocally(buffer: Buffer, ext: string, userId?: string): Promise<string> {
     const filename = `${shortId()}${ext}`;
-    await fs.writeFile(path.join(UPLOADS_DIR, filename), buffer);
-    return `/api/uploaded/${filename}`;
+    const scoped = userId && USER_STORAGE_ID_PATTERN.test(userId);
+    const directory = scoped ? userUploadsDir(userId!) : UPLOADS_DIR;
+    await fs.mkdir(directory, { recursive: true });
+    await fs.writeFile(path.join(directory, filename), buffer, { mode: 0o600 });
+    return scoped ? `/api/uploaded/${userId}/${filename}` : `/api/uploaded/${filename}`;
 }
 
-export async function readLocalUpload(filename: string): Promise<Buffer> {
+export async function readLocalUpload(filename: string, userId?: string): Promise<Buffer> {
     const safe = path.basename(filename);
+    if (userId && USER_STORAGE_ID_PATTERN.test(userId)) return fs.readFile(path.join(userUploadsDir(userId), safe));
     return fs.readFile(path.join(UPLOADS_DIR, safe));
 }
 
-export async function saveDownload(taskId: string, suffix: string, buffer: Buffer): Promise<string> {
+export async function saveDownload(taskId: string, suffix: string, buffer: Buffer, userId?: string): Promise<string> {
     const isVideo = /\.(mp4|webm|mov)$/i.test(suffix);
-    const dir = isVideo ? DOWNLOADS_VIDEOS_DIR : DOWNLOADS_IMAGES_DIR;
+    const scoped = userId && USER_STORAGE_ID_PATTERN.test(userId);
+    const dir = scoped
+        ? path.join(userDownloadsDir(userId!), isVideo ? "videos" : "images")
+        : isVideo ? DOWNLOADS_VIDEOS_DIR : DOWNLOADS_IMAGES_DIR;
     const filePath = path.join(dir, `${taskId}${suffix}`);
+    await fs.mkdir(dir, { recursive: true });
     await fs.writeFile(filePath, buffer);
     return filePath;
 }
@@ -103,17 +111,21 @@ export async function downloadUrl(url: string, taskId: string, index: number): P
     return saveDownload(taskId, `_${index}${ext}`, buffer);
 }
 
-export async function resolveLocalUpload(url: string): Promise<string> {
+export async function resolveLocalUpload(url: string, userId?: string): Promise<string> {
     if (url.startsWith("/api/uploaded/")) {
         const filename = url.replace("/api/uploaded/", "");
-        const buffer = await readLocalUpload(filename);
-        const ext = path.extname(filename).toLowerCase();
+        const [candidateUserId, scopedFilename] = filename.split("/", 2);
+        const scoped = Boolean(scopedFilename) && USER_STORAGE_ID_PATTERN.test(candidateUserId);
+        if (scoped && userId && candidateUserId !== userId) throw new Error("ERR_UPLOAD_ACCESS_DENIED");
+        const effectiveFilename = scoped ? scopedFilename! : filename;
+        const buffer = await readLocalUpload(effectiveFilename, scoped ? candidateUserId : undefined);
+        const ext = path.extname(effectiveFilename).toLowerCase();
         const mime = ext === ".jpg" || ext === ".jpeg" ? "image/jpeg"
             : ext === ".png" ? "image/png"
                 : ext === ".mp4" ? "video/mp4"
                     : ext === ".mp3" ? "audio/mpeg"
                         : "application/octet-stream";
-        return uploadToTmpfiles(buffer, path.basename(filename), mime);
+        return uploadToTmpfiles(buffer, path.basename(effectiveFilename), mime);
     }
     return url;
 }

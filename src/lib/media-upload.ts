@@ -18,9 +18,9 @@ export interface ResolvedMedia {
 }
 
 /** Process an image file: convert to JPEG, save locally, upload remotely */
-export async function processImageUpload(buffer: Buffer): Promise<ResolvedMedia> {
+export async function processImageUpload(buffer: Buffer, userId?: string): Promise<ResolvedMedia> {
     const jpeg = await toJpeg(buffer);
-    const localUrl = await saveInputLocally(jpeg, ".jpg");
+    const localUrl = await saveInputLocally(jpeg, ".jpg", userId);
     const remoteUrl = await uploadToTmpfiles(jpeg, "image.jpg", "image/jpeg");
     return { remoteUrl, localUrl };
 }
@@ -29,18 +29,19 @@ export async function processImageUpload(buffer: Buffer): Promise<ResolvedMedia>
 export async function processFileUpload(
     buffer: Buffer,
     filename: string,
-    mimeType: string
+    mimeType: string,
+    userId?: string
 ): Promise<ResolvedMedia> {
     const ext = filename.includes(".") ? `.${filename.split(".").pop()}` : ".bin";
-    const localUrl = await saveInputLocally(buffer, ext);
+    const localUrl = await saveInputLocally(buffer, ext, userId);
     const remoteUrl = await uploadToTmpfiles(buffer, `file${ext}`, mimeType);
     return { remoteUrl, localUrl };
 }
 
 /** Resolve a URL that may be a local upload reference to a remote URL */
-export async function resolveUrl(url: string): Promise<ResolvedMedia> {
+export async function resolveUrl(url: string, userId?: string): Promise<ResolvedMedia> {
     if (url.startsWith("/api/uploaded/") || url.startsWith("/api/download/")) {
-        const remoteUrl = await resolveLocalUpload(url);
+        const remoteUrl = await resolveLocalUpload(url, userId);
         return { remoteUrl, localUrl: url };
     }
     const safeUrl = await assertSafeRemoteUrl(url);

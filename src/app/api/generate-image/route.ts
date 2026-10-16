@@ -76,7 +76,7 @@ async function generateImage(req: NextRequest, userId: string) {
         const buf = Buffer.from(await file.arrayBuffer());
         const ext = file.name.split(".").pop() ? `.${file.name.split(".").pop()}` : ".jpg";
         const mimeType = file.type || "image/jpeg";
-        const localUrl = await saveInputLocally(buf, ext);
+        const localUrl = await saveInputLocally(buf, ext, userId);
         slotLocalUrls[slotId] = [...(slotLocalUrls[slotId] ?? []), localUrl];
         const remoteUrl = await uploadToTmpfiles(buf, `file${ext}`, mimeType);
         converted.push(remoteUrl);
@@ -90,7 +90,7 @@ async function generateImage(req: NextRequest, userId: string) {
       const buf = Buffer.from(await file.arrayBuffer());
       const ext = file.name.split(".").pop() ? `.${file.name.split(".").pop()}` : ".jpg";
       const mimeType = file.type || "image/jpeg";
-      const localUrl = await saveInputLocally(buf, ext);
+      const localUrl = await saveInputLocally(buf, ext, userId);
       slotLocalUrls[slotId] = [...(slotLocalUrls[slotId] ?? []), localUrl];
       const remoteUrl = await uploadToTmpfiles(buf, `file${ext}`, mimeType);
       converted.push(remoteUrl);

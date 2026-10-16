@@ -38,7 +38,7 @@ export async function attachGeneratedAssets(task: AnyTask, assets: GeneratedAsse
         for (const [index, asset] of assets.entries()) {
             const materialized = await materializeAsset(asset);
             const ext = extensionFor(materialized.mimeType, materialized.sourceUrl);
-            paths.push(await saveDownload(task.task_id, `_${index}${ext}`, materialized.data));
+            paths.push(await saveDownload(task.task_id, `_${index}${ext}`, materialized.data, task.user_id));
             if (isDatabaseConfigured()) {
                 const mimeType = materialized.mimeType ?? (ext === ".jpg" ? "image/jpeg" : `image/${ext.slice(1)}`);
                 urls.push(`data:${mimeType};base64,${materialized.data.toString("base64")}`);
@@ -54,6 +54,6 @@ export async function attachGeneratedAssets(task: AnyTask, assets: GeneratedAsse
     const videoTask = task as VideoTask;
     const first = await materializeAsset(assets[0]);
     const ext = extensionFor(first.mimeType, first.sourceUrl);
-    videoTask.video_path = await saveDownload(task.task_id, ext === ".bin" ? ".mp4" : ext, first.data);
+    videoTask.video_path = await saveDownload(task.task_id, ext === ".bin" ? ".mp4" : ext, first.data, task.user_id);
     videoTask.video_urls = assets.flatMap((asset) => asset.url ? [asset.url] : []);
 }

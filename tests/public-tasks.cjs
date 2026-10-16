@@ -15,7 +15,7 @@ const originalLoad = Module._load;
 const originalFetch = global.fetch;
 let current;
 const sessionCookie = "hf_session=fixture-session";
-const fixtureUser = { id: "fixture-user" };
+const fixtureUser = { id: "0123456789abcdef0123456789abcdef" };
 Module._resolveFilename = function (id, parent, ...rest) {
     return originalResolve.call(this, id.startsWith("@/") ? path.join(root, "src", id.slice(2)) + ".ts" : id, parent, ...rest);
 };
@@ -27,7 +27,7 @@ Module._load = function (id, parent, ...rest) {
         initStore: async () => {}, getTask: id => current?.task_id === id ? current : undefined,
         getVideoTasks: () => [current], getImageTasks: () => [current],
     };
-    if (id === "@/lib/storage-paths") return { STORAGE_ROOT: storage };
+    if (id === "@/lib/storage-paths") return { STORAGE_ROOT: storage, USER_STORAGE_ID_PATTERN: /^[a-f0-9]{16,64}$/i, userUploadsDir: userId => path.join(storage, "users", userId, "uploads") };
     if (id === "@/lib/users") return { getRequestSessionUser: async request => request.headers.get("cookie") === sessionCookie ? fixtureUser : null };
     return originalLoad.call(this, id, parent, ...rest);
 };
@@ -117,14 +117,18 @@ async function main() {
     const absent = await events.GET(new NextRequest("http://studio.invalid/api/events/missing"), { params: Promise.resolve({ taskId: "missing" }) });
     assert.equal(absent.status, 404); assertPrivateHeaders(absent);
 
-    const uploaded = require(path.join(root, "src/app/api/uploaded/[filename]/route.ts"));
-    fs.mkdirSync(path.join(storage, "uploads")); fs.writeFileSync(path.join(storage, "uploads", "fixture.png"), "fixture-image-bytes");
-    const upload = await uploaded.GET(new NextRequest("http://studio.invalid/api/uploaded/fixture.png"), { params: Promise.resolve({ filename: "fixture.png" }) });
+    const uploaded = require(path.join(root, "src/app/api/uploaded/[...path]/route.ts"));
+    fs.mkdirSync(path.join(storage, "users", fixtureUser.id, "uploads"), { recursive: true }); fs.writeFileSync(path.join(storage, "users", fixtureUser.id, "uploads", "fixture.png"), "fixture-image-bytes");
+    const anonymousUpload = await uploaded.GET(new NextRequest("http://studio.invalid/api/uploaded/fixture.png"), { params: Promise.resolve({ path: ["fixture.png"] }) });
+    assert.equal(anonymousUpload.status, 401); assertPrivateHeaders(anonymousUpload);
+    const foreignUpload = await uploaded.GET(new NextRequest("http://studio.invalid/api/uploaded/0123456789abcdef0123456789abcdef/fixture.png", { headers: { cookie: sessionCookie } }), { params: Promise.resolve({ path: ["fedcba9876543210fedcba9876543210", "fixture.png"] }) });
+    assert.equal(foreignUpload.status, 404); assertPrivateHeaders(foreignUpload);
+    const upload = await uploaded.GET(new NextRequest("http://studio.invalid/api/uploaded/fixture.png", { headers: { cookie: sessionCookie } }), { params: Promise.resolve({ path: [fixtureUser.id, "fixture.png"] }) });
     assert.equal(upload.status, 200); assertPrivateHeaders(upload);
     assert.equal(upload.headers.get("x-content-type-options"), "nosniff");
     assert(upload.headers.get("content-security-policy").includes("sandbox"));
     assert.equal(await upload.text(), "fixture-image-bytes");
-    const missingUpload = await uploaded.GET(new NextRequest("http://studio.invalid/api/uploaded/missing.png"), { params: Promise.resolve({ filename: "missing.png" }) });
+    const missingUpload = await uploaded.GET(new NextRequest("http://studio.invalid/api/uploaded/missing.png", { headers: { cookie: sessionCookie } }), { params: Promise.resolve({ path: [fixtureUser.id, "missing.png"] }) });
     assert.equal(missingUpload.status, 404); assertPrivateHeaders(missingUpload);
 
     current = image;

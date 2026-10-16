@@ -109,11 +109,11 @@ async function generateVideo(req: NextRequest, userId: string) {
       try {
         const buf = Buffer.from(await file.arrayBuffer());
         if (slot.kind === "image") {
-          const result = await processImageUpload(buf);
+          const result = await processImageUpload(buf, userId);
           url = result.remoteUrl;
         } else {
           const mimeType = file.type || (slot.kind === "video" ? "video/mp4" : "application/octet-stream");
-          const result = await processFileUpload(buf, file.name, mimeType);
+          const result = await processFileUpload(buf, file.name, mimeType, userId);
           url = result.remoteUrl;
         }
       } catch (e) {
@@ -121,7 +121,7 @@ async function generateVideo(req: NextRequest, userId: string) {
       }
     } else if (url) {
       try {
-        const resolved = await resolveUrl(url);
+        const resolved = await resolveUrl(url, userId);
         url = resolved.remoteUrl;
       } catch (e) {
         return NextResponse.json({ error: publicErrorMessage(e, "ERR_UPLOAD_RESOLVE_FAILED") }, { status: 400 });
@@ -147,10 +147,10 @@ async function generateVideo(req: NextRequest, userId: string) {
 
       if (frontalFile && frontalFile.size > 0) {
         const buf = Buffer.from(await frontalFile.arrayBuffer());
-        const result = await processImageUpload(buf);
+        const result = await processImageUpload(buf, userId);
         frontalUrl = result.remoteUrl;
       } else if (frontalUrl.startsWith("/api/uploaded/")) {
-        try { frontalUrl = (await resolveUrl(frontalUrl)).remoteUrl; } catch { frontalUrl = ""; }
+        try { frontalUrl = (await resolveUrl(frontalUrl, userId)).remoteUrl; } catch { frontalUrl = ""; }
       }
 
       const refCount = parseInt(String(form.get(`elem_${i}_ref_count`) ?? "0"), 10);
@@ -160,10 +160,10 @@ async function generateVideo(req: NextRequest, userId: string) {
         let refUrl = String(form.get(`url_elem_${i}_ref_${j}`) ?? "").trim();
         if (refFile && refFile.size > 0) {
           const buf = Buffer.from(await refFile.arrayBuffer());
-          const result = await processImageUpload(buf);
+          const result = await processImageUpload(buf, userId);
           refUrl = result.remoteUrl;
         } else if (refUrl.startsWith("/api/uploaded/")) {
-          try { refUrl = (await resolveUrl(refUrl)).remoteUrl; } catch { refUrl = ""; }
+          try { refUrl = (await resolveUrl(refUrl, userId)).remoteUrl; } catch { refUrl = ""; }
         }
         if (refUrl) refUrls.push(refUrl);
       }
