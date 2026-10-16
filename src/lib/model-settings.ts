@@ -35,6 +35,7 @@ export const ADMIN_MODEL_FEATURES: AdminModelFeature[] = [
     { feature: "video_generation", label: "Video generation", mode: "catalog", choices: videoChoices },
     { feature: "influencer_generation", label: "Influencer", mode: "catalog", choices: videoChoices },
     { feature: "supercomputer_generation", label: "Supercomputer", mode: "catalog", choices: videoChoices },
+    { feature: "katana_generation", label: "Katana reference video", mode: "catalog", choices: videoChoices },
     { feature: "genjutsu_motion_transfer", label: "Genjutsu motion transfer", mode: "catalog", choices: videoChoices.filter(model => model.id === "higgsfield__genjutsu-motion-transfer") },
     { feature: "genjutsu_object_swap", label: "Genjutsu object swap", mode: "catalog", choices: videoChoices.filter(model => model.id === "higgsfield__genjutsu-object-swap") },
     { feature: "cinema_generation", label: "Cinema generation", mode: "catalog", choices: videoChoices.filter(model => model.id === "higgsfield__cinema-studio-4.0") },
