@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import { Manrope, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "@/app/globals.css";
 
-const manrope = Manrope({
+const inter = Inter({
     subsets: ["latin"],
-    variable: "--font-manrope",
+    variable: "--font-inter",
     weight: ["400", "500", "600", "700", "800"],
 });
 
@@ -76,7 +76,7 @@ export default async function LocaleLayout({
 
     return (
         <html lang={locale} className="dark">
-            <body className={`${manrope.variable} ${spaceGrotesk.variable}`}>
+            <body className={`${inter.variable} ${spaceGrotesk.variable}`}>
                 <NextIntlClientProvider messages={messages}>
                     <TooltipProvider>{children}</TooltipProvider>
                 </NextIntlClientProvider>

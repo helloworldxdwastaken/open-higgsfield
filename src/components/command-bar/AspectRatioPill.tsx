@@ -77,7 +77,7 @@ export function AspectRatioPill({ ratios, value, onChange, customFields, fieldVa
                 className="flex items-center gap-2 rounded-[10px] px-2 py-2 text-xs transition-colors cursor-pointer w-full"
                 style={{
                     background: selected ? "rgba(213,255,71,.1)" : "transparent",
-                    color: selected ? "#d5ff47" : "#f4f7fb",
+                    color: selected ? "#d1fe17" : "#f4f7fb",
                     fontWeight: selected ? 700 : 500,
                 }}
                 onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = "rgba(255,255,255,.06)"; }}
@@ -85,7 +85,7 @@ export function AspectRatioPill({ ratios, value, onChange, customFields, fieldVa
             >
                 <AspectRatioIcon ratio={val} />
                 <span className="flex-1 text-left">{label}</span>
-                {selected && <Check className="h-3 w-3 shrink-0" style={{ color: "#d5ff47" }} />}
+                {selected && <Check className="h-3 w-3 shrink-0" style={{ color: "#d1fe17" }} />}
             </button>
         );
     }
@@ -99,7 +99,7 @@ export function AspectRatioPill({ ratios, value, onChange, customFields, fieldVa
                 className="flex items-center gap-2 w-full rounded-[10px] px-2 py-2 text-xs transition-colors cursor-pointer"
                 style={{
                     background: selected ? "rgba(213,255,71,.1)" : "transparent",
-                    color: selected ? "#d5ff47" : "#f4f7fb",
+                    color: selected ? "#d1fe17" : "#f4f7fb",
                     fontWeight: selected ? 700 : 500,
                 }}
                 onMouseEnter={(e) => { if (!selected) e.currentTarget.style.background = "rgba(255,255,255,.06)"; }}
@@ -107,7 +107,7 @@ export function AspectRatioPill({ ratios, value, onChange, customFields, fieldVa
             >
                 <Icon className="h-4 w-4 shrink-0" />
                 <span className="flex-1 text-left">{label}</span>
-                {selected && <Check className="h-3 w-3 shrink-0" style={{ color: "#d5ff47" }} />}
+                {selected && <Check className="h-3 w-3 shrink-0" style={{ color: "#d1fe17" }} />}
             </button>
         );
     }

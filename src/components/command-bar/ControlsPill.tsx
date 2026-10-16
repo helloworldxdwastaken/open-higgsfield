@@ -70,7 +70,7 @@ export function ControlsPill({ model, fieldValues, onFieldChange, count }: Contr
                                                 style={active ? {
                                                     background: "rgba(213,255,71,.14)",
                                                     borderColor: "rgba(213,255,71,.4)",
-                                                    color: "#d5ff47",
+                                                    color: "#d1fe17",
                                                 } : {
                                                     background: "rgba(255,255,255,.04)",
                                                     borderColor: "rgba(255,255,255,.1)",

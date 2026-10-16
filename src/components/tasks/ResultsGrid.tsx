@@ -238,7 +238,7 @@ function VideoResultCard({
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                     <motion.div
                         className="h-9 w-9 rounded-full"
-                        style={{ border: "2.5px solid #d5ff47", borderTopColor: "transparent" }}
+                        style={{ border: "2.5px solid #d1fe17", borderTopColor: "transparent" }}
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                     />
@@ -384,7 +384,7 @@ function ImageResultCard({
                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
                     <motion.div
                         className="h-9 w-9 rounded-full"
-                        style={{ border: "2.5px solid #d5ff47", borderTopColor: "transparent" }}
+                        style={{ border: "2.5px solid #d1fe17", borderTopColor: "transparent" }}
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                     />

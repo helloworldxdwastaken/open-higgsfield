@@ -854,7 +854,7 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
                         style={{
                             width: 146,
                             minHeight: 84,
-                            background: "linear-gradient(180deg, #d5ff47, #bcf122)",
+                            background: "linear-gradient(180deg, #d1fe17, #bcf122)",
                             color: "#0b1118",
                             fontFamily: "'Space Grotesk', system-ui, sans-serif",
                             fontSize: 18,
@@ -863,7 +863,7 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
                         }}
                     >
                         <span>{tCommon("generate")}</span>
-                        <small className="block mt-1 text-[10px] font-extrabold tracking-[.08em] uppercase" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                        <small className="block mt-1 text-[10px] font-extrabold tracking-[.08em] uppercase" style={{ fontFamily: "'Inter', sans-serif" }}>
                             {mode === "video" ? tCommon("video") : tCommon("image")}
                         </small>
                     </button>

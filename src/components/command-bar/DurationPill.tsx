@@ -36,7 +36,7 @@ export function DurationPill({ durations, value, onChange }: DurationPillProps) 
                         onClick={() => { onChange(d); setOpen(false); }}
                         className="rounded-[10px] px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer"
                         style={{
-                            background: value === d ? "#d5ff47" : "rgba(255,255,255,.06)",
+                            background: value === d ? "#d1fe17" : "rgba(255,255,255,.06)",
                             color: value === d ? "#0b1118" : "#f4f7fb",
                         }}
                     >

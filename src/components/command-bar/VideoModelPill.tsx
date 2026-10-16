@@ -56,7 +56,7 @@ export function VideoModelPill({ modelId, variantId: _variantId, onModelChange }
                                                 className="w-full flex items-center justify-between rounded-[10px] px-2.5 py-2 text-xs transition-colors cursor-pointer"
                                                 style={{
                                                     background: isSelected ? "rgba(213,255,71,.1)" : "transparent",
-                                                    color: isSelected ? "#d5ff47" : "#f4f7fb",
+                                                    color: isSelected ? "#d1fe17" : "#f4f7fb",
                                                     fontWeight: isSelected ? 700 : 500,
                                                 }}
                                                 onMouseEnter={(e) => {
@@ -68,7 +68,7 @@ export function VideoModelPill({ modelId, variantId: _variantId, onModelChange }
                                                 >
                                                     <span className="truncate">{m.label}</span>
                                                     <div className="flex items-center gap-2 shrink-0">
-                                                    {isSelected && <Check className="h-3.5 w-3.5" style={{ color: "#d5ff47" }} />}
+                                                    {isSelected && <Check className="h-3.5 w-3.5" style={{ color: "#d1fe17" }} />}
                                                 </div>
                                             </button>
                                         );

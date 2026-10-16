@@ -7,7 +7,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Manrope', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -39,7 +39,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --color-lime: #d5ff47;
+  --color-lime: #d1fe17;
   --color-lime-2: #bcf122;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -52,13 +52,13 @@
 
 :root {
   /* Dark-only studio theme matching Flask */
-  --background: #060606;
-  --foreground: #f4f7fb;
+  --background: #0f1113;
+  --foreground: #f7f7f8;
   --card: rgba(16, 16, 16, .86);
   --card-foreground: #f4f7fb;
   --popover: rgba(18, 18, 18, .97);
   --popover-foreground: #f4f7fb;
-  --primary: #d5ff47;
+  --primary: #d1fe17;
   --primary-foreground: #0b1118;
   --secondary: rgba(255, 255, 255, .05);
   --secondary-foreground: rgba(244, 247, 251, .72);
@@ -70,7 +70,7 @@
   --border: rgba(255, 255, 255, .08);
   --input: rgba(255, 255, 255, .08);
   --ring: rgba(213, 255, 71, .4);
-  --chart-1: #d5ff47;
+  --chart-1: #d1fe17;
   --chart-2: #8ef4c5;
   --chart-3: #ffd56a;
   --chart-4: #ff8080;
@@ -78,7 +78,7 @@
   --radius: 0.875rem;
   --sidebar: #111111;
   --sidebar-foreground: #f4f7fb;
-  --sidebar-primary: #d5ff47;
+  --sidebar-primary: #d1fe17;
   --sidebar-primary-foreground: #0b1118;
   --sidebar-accent: rgba(255, 255, 255, .07);
   --sidebar-accent-foreground: #f4f7fb;
@@ -93,7 +93,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Manrope', system-ui, sans-serif;
+    font-family: 'Inter', system-ui, sans-serif;
     background:
       radial-gradient(circle at top left, rgba(255, 255, 255, .06), transparent 24%),
       radial-gradient(circle at 88% 78%, rgba(213, 255, 71, .08), transparent 18%),
@@ -136,4 +136,4 @@
   }
 }
 
-.connections-page{min-height:100vh;background:#080909;color:#eee;font-family:inherit;padding:42px 22px}.connections-wrap{max-width:940px;margin:auto}.connections-back{font-size:14px;color:#c1cbbe;text-decoration:none}.connections-heading{margin:56px 0 36px}.connections-eyebrow{font-size:11px;letter-spacing:.19em;color:#bce96d}.connections-heading h1{font-size:clamp(36px,6vw,60px);line-height:1.06;letter-spacing:-.045em;font-weight:600;margin:17px 0}.connections-heading p{color:#abb2a9;line-height:1.6;font-size:15px}.connections-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.connection-field{padding:22px;background:#101311;border:1px solid #283127;border-radius:15px}.connection-field-heading{display:flex;gap:10px;align-items:start;justify-content:space-between;margin-bottom:16px}.connection-field-heading label{font-size:14px;font-weight:600}.connection-status{white-space:nowrap;color:#b5bbb0;font-size:10px;line-height:20px}.connection-status.connected{color:#c5ed9a}.connection-field>input{width:100%;box-sizing:border-box;background:#080a08;border:1px solid #424d3c;border-radius:7px;padding:12px;color:#f3f7ee;font-family:monospace;font-size:12px}.connection-field input:focus-visible{outline:2px solid #d5ff47;outline-offset:3px}.connection-field-footer{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:13px;font-size:11px;color:#b7c4b0}.connection-field-footer a{color:#d5e5c9;text-decoration:underline;text-underline-offset:3px}.connection-remove{display:flex;align-items:center;gap:7px}.connections-footer{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:15px;margin-top:27px}.connections-footer p{font-size:12px;color:#aeb8a7}.connections-footer button{background:#d5ff47;color:#152000;font-weight:700;padding:12px 22px;border:0;border-radius:8px;cursor:pointer}.connections-footer button:disabled{opacity:.5}.connections-message{font-size:14px;color:#cce9ae;min-height:24px;margin-top:15px}@media(max-width:640px){.connections-fields{grid-template-columns:1fr}.connections-heading{margin-top:38px}.connection-field{padding:18px}}
+.connections-page{min-height:100vh;background:#080909;color:#eee;font-family:inherit;padding:42px 22px}.connections-wrap{max-width:940px;margin:auto}.connections-back{font-size:14px;color:#c1cbbe;text-decoration:none}.connections-heading{margin:56px 0 36px}.connections-eyebrow{font-size:11px;letter-spacing:.19em;color:#bce96d}.connections-heading h1{font-size:clamp(36px,6vw,60px);line-height:1.06;letter-spacing:-.045em;font-weight:600;margin:17px 0}.connections-heading p{color:#abb2a9;line-height:1.6;font-size:15px}.connections-fields{display:grid;grid-template-columns:1fr 1fr;gap:16px}.connection-field{padding:22px;background:#101311;border:1px solid #283127;border-radius:15px}.connection-field-heading{display:flex;gap:10px;align-items:start;justify-content:space-between;margin-bottom:16px}.connection-field-heading label{font-size:14px;font-weight:600}.connection-status{white-space:nowrap;color:#b5bbb0;font-size:10px;line-height:20px}.connection-status.connected{color:#c5ed9a}.connection-field>input{width:100%;box-sizing:border-box;background:#080a08;border:1px solid #424d3c;border-radius:7px;padding:12px;color:#f3f7ee;font-family:monospace;font-size:12px}.connection-field input:focus-visible{outline:2px solid #d1fe17;outline-offset:3px}.connection-field-footer{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;margin-top:13px;font-size:11px;color:#b7c4b0}.connection-field-footer a{color:#d5e5c9;text-decoration:underline;text-underline-offset:3px}.connection-remove{display:flex;align-items:center;gap:7px}.connections-footer{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:15px;margin-top:27px}.connections-footer p{font-size:12px;color:#aeb8a7}.connections-footer button{background:#d1fe17;color:#152000;font-weight:700;padding:12px 22px;border:0;border-radius:8px;cursor:pointer}.connections-footer button:disabled{opacity:.5}.connections-message{font-size:14px;color:#cce9ae;min-height:24px;margin-top:15px}@media(max-width:640px){.connections-fields{grid-template-columns:1fr}.connections-heading{margin-top:38px}.connection-field{padding:18px}}
