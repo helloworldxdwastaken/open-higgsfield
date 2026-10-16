@@ -95,8 +95,13 @@ async function main() {
 
     const mcp = require(path.join(root, "src/app/api/mcp/route.ts"));
     for (const name of ["highfield_jobs", "highfield_job"]) {
-        const response = await mcp.POST(new NextRequest("http://studio.invalid/api/mcp", {
+        const anonymous = await mcp.POST(new NextRequest("http://studio.invalid/api/mcp", {
             method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: { task_id: "fixture-job" } } }),
+        }));
+        assert.equal(anonymous.status, 401); assert.equal(anonymous.headers.get("cache-control"), "no-store");
+        const response = await mcp.POST(new NextRequest("http://studio.invalid/api/mcp", {
+            method: "POST", headers: { cookie: sessionCookie, "Content-Type": "application/json" },
             body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name, arguments: { task_id: "fixture-job" } } }),
         }));
         assert.equal(response.status, 200); assert.equal(response.headers.get("cache-control"), "no-store");
@@ -135,7 +140,7 @@ async function main() {
     current = { ...image, result_paths: [], result_urls: [privateUrl] };
     const remoteOnly = await gallery.POST(request({ task_id: "fixture-job" }));
     assert.equal(remoteOnly.status, 400); assertPublic(await remoteOnly.json());
-    console.log("Public task privacy contracts passed: authentication, DTOs, SSE, private cache headers and gallery handles; no network requests.");
+    console.log("Public task privacy contracts passed: authenticated MCP, DTOs, SSE, private cache headers and gallery handles; no network requests.");
 }
 main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => {
     global.fetch = originalFetch; Module._load = originalLoad; Module._resolveFilename = originalResolve;

@@ -5,6 +5,7 @@ import { connectionStatus } from "@/lib/connections";
 import { getImageTasks, getVideoTasks, getTask, initStore } from "@/lib/task-store";
 import { toPublicTask } from "@/lib/public-tasks";
 import { getCinemaProject, listCinemaProjects } from "@/lib/cinema-store";
+import { getRequestSessionUser } from "@/lib/users";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -27,6 +28,8 @@ function summarize(task: ReturnType<typeof getTask>) {
 }
 
 export async function POST(request: NextRequest) {
+    const user = await getRequestSessionUser(request);
+    if (!user) return NextResponse.json({ error: "Authentication required." }, { status: 401, headers });
     const origin = request.headers.get("origin");
     if (origin && origin !== (process.env.STUDIO_PUBLIC_ORIGIN || request.nextUrl.origin)) return NextResponse.json({ error: "Untrusted origin." }, { status: 403, headers });
     if (!request.headers.get("content-type")?.startsWith("application/json")) return NextResponse.json({ error: "JSON required." }, { status: 415, headers });
@@ -54,14 +57,14 @@ export async function POST(request: NextRequest) {
             case "highfield_connections": result = connectionStatus(); break;
             case "highfield_jobs":
                 await initStore();
-                result = [...getImageTasks(), ...getVideoTasks()].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 50).map(task => summarize(getTask(task.task_id))); break;
+                result = [...getImageTasks(user.id), ...getVideoTasks(user.id)].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 50).map(task => summarize(getTask(task.task_id, user.id))); break;
             case "highfield_job":
                 if (typeof args.task_id !== "string" || args.task_id.length > 128) throw new Error("Invalid task_id");
-                await initStore(); result = summarize(getTask(args.task_id)); break;
-            case "highfield_cinema_projects": result = await listCinemaProjects(); break;
+                await initStore(); result = summarize(getTask(args.task_id, user.id)); break;
+            case "highfield_cinema_projects": result = await listCinemaProjects(user.id); break;
             case "highfield_cinema_project":
                 if (typeof args.project_id !== "string") throw new Error("Invalid project_id");
-                result = await getCinemaProject(args.project_id) || null; break;
+                result = await getCinemaProject(args.project_id, user.id) || null; break;
             default: throw new Error("Unknown tool");
         }
         return reply({ content: [{ type: "text", text: JSON.stringify(result) }] });

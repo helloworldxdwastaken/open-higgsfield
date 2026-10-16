@@ -14,6 +14,7 @@ import { catalogCapability, openRouterCatalog } from "@/lib/provider-catalog";
 const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
 const active = new Set(["submitting", "uncertain"]);
 export interface CinemaGenerateInput {
+    userId: string;
     projectId: string;
     shotId: string;
     version: number;
@@ -111,7 +112,7 @@ function shotJob(record: CinemaGenerationRecord): CinemaGeneration {
     return { requestId: record.requestId, fingerprint: record.fingerprint, state: record.state, createdAt: record.createdAt, updatedAt: record.updatedAt,
         ...(record.taskId ? { taskId: record.taskId } : {}), ...(record.error ? { error: record.error } : {}) };
 }
-async function markRecord(projectId: string, requestId: string, state: "accepted" | "uncertain", taskId?: string) {
+async function markRecord(projectId: string, requestId: string, state: "accepted" | "uncertain", taskId?: string, userId?: string) {
     return mutateCinemaProject(projectId, undefined, project => {
         const record = project.generationHistory.find(entry => entry.requestId === requestId);
         if (!record) throw new Error("ERR_CINEMA_REQUEST_NOT_FOUND");
@@ -122,27 +123,28 @@ async function markRecord(projectId: string, requestId: string, state: "accepted
         const shot = shotRequired(project, record.shotId);
         shot[record.mediaType] = shotJob(record);
         return project;
-    });
+    }, userId ?? "");
 }
-async function replay(project: CinemaProject, record: CinemaGenerationRecord) {
+async function replay(project: CinemaProject, record: CinemaGenerationRecord, userId: string) {
     if (record.state === "accepted" && record.taskId) return { project, taskId: record.taskId, replayed: true };
     await initStore();
     const task = [...getStore().values()].find(entry => {
         const cinema = entry.reuse_state?.cinema as { projectId?: string; shotId?: string; requestId?: string } | undefined;
         return entry.media_type === record.mediaType && cinema?.projectId === project.id && cinema.shotId === record.shotId && cinema.requestId === record.requestId;
     });
-    if (task) return { project: await markRecord(project.id, record.requestId, "accepted", task.task_id), taskId: task.task_id, replayed: true };
+        if (task) return { project: await markRecord(project.id, record.requestId, "accepted", task.task_id, userId), taskId: task.task_id, replayed: true };
     throw new Error(record.state === "uncertain" ? "ERR_CINEMA_SUBMISSION_UNCERTAIN" : "ERR_CINEMA_BUSY");
 }
 export async function generateCinemaShot(input: CinemaGenerateInput) {
     validateGenerate(input);
-    let project = projectRequired(await getCinemaProject(input.projectId));
+    if (!input.userId) throw new Error("ERR_CINEMA_VALIDATION");
+    let project = projectRequired(await getCinemaProject(input.projectId, input.userId));
     const shot = shotRequired(project, input.shotId);
     const hash = fingerprint(project, shot, input);
     const prior = project.generationHistory.find(record => record.requestId === input.requestId);
     if (prior) {
         if (prior.fingerprint !== hash || prior.shotId !== input.shotId || prior.mediaType !== input.mediaType) throw new Error("ERR_CINEMA_REQUEST_REUSE");
-        return replay(project, prior);
+        return replay(project, prior, input.userId);
     }
     if (project.version !== input.version) throw new Error("ERR_CINEMA_VERSION_CONFLICT");
     if (project.generationHistory.some(record => record.shotId === shot.id && active.has(record.state))) throw new Error("ERR_CINEMA_BUSY");
@@ -164,31 +166,32 @@ export async function generateCinemaShot(input: CinemaGenerateInput) {
         current.generationHistory.push(record);
         shotRequired(current, input.shotId)[input.mediaType] = shotJob(record);
         return current;
-    });
+    }, input.userId);
     try {
         await initStore();
-        const taskId = await submitGeneration({ mediaType: input.mediaType, modelId: caps.id, capabilities: caps, params, media: {}, reuseState: { cinema: { projectId: project.id, shotId: input.shotId, requestId: input.requestId } } });
-        return { project: await markRecord(project.id, input.requestId, "accepted", taskId), taskId, replayed: false };
+        const taskId = await submitGeneration({ userId: input.userId, mediaType: input.mediaType, modelId: caps.id, capabilities: caps, params, media: {}, reuseState: { cinema: { projectId: project.id, shotId: input.shotId, requestId: input.requestId } } });
+        return { project: await markRecord(project.id, input.requestId, "accepted", taskId, input.userId), taskId, replayed: false };
     } catch {
         // Persist uncertainty before responding; an error is never permission to submit again.
-        await markRecord(project.id, input.requestId, "uncertain").catch(() => {});
+        await markRecord(project.id, input.requestId, "uncertain", undefined, input.userId).catch(() => {});
         throw new Error("ERR_CINEMA_SUBMISSION_UNCERTAIN");
     }
 }
 
 /** Reconcile a known submission with the private task store; never submit a new job. */
-export async function cinemaSubmissionStatus(projectId: string, requestId: string) {
+export async function cinemaSubmissionStatus(projectId: string, requestId: string, userId: string) {
     if (typeof projectId !== "string" || !uuid.test(projectId) || typeof requestId !== "string" || !uuid.test(requestId)) throw new Error("ERR_CINEMA_VALIDATION");
-    const project = projectRequired(await getCinemaProject(projectId));
+    const project = projectRequired(await getCinemaProject(projectId, userId));
     const record = project.generationHistory.find(entry => entry.requestId === requestId);
     if (!record) throw new Error("ERR_CINEMA_REQUEST_NOT_FOUND");
-    return { ...await replay(project, record), state: "accepted" as const };
+    return { ...await replay(project, record, userId), state: "accepted" as const };
 }
 
 const planning = globalThis as typeof globalThis & { __cinemaPlanning?: boolean };
-export async function planCinemaProject(input: { projectId: string; version: number; engine: DirectorEngine; model: string; shotCount: number }) {
+export async function planCinemaProject(input: { projectId: string; version: number; engine: DirectorEngine; model: string; shotCount: number; userId?: string }) {
     if (!input || typeof input.projectId !== "string" || !uuid.test(input.projectId) || !Number.isSafeInteger(input.version) || input.version < 1 || !["ollama", "lm-studio"].includes(input.engine) || typeof input.model !== "string" || !input.model || input.model.length > 200 || !Number.isSafeInteger(input.shotCount) || input.shotCount < 1 || input.shotCount > 12) throw new Error("ERR_CINEMA_VALIDATION");
-    const project = projectRequired(await getCinemaProject(input.projectId));
+    if (!input.userId) throw new Error("ERR_CINEMA_VALIDATION");
+    const project = projectRequired(await getCinemaProject(input.projectId, input.userId));
     if (project.version !== input.version) throw new Error("ERR_CINEMA_VERSION_CONFLICT");
     if (!project.brief.trim()) throw new Error("ERR_CINEMA_BRIEF_REQUIRED");
     if (project.generationHistory.some(record => active.has(record.state))) throw new Error("ERR_CINEMA_BUSY");
@@ -212,6 +215,6 @@ export async function planCinemaProject(input: { projectId: string; version: num
             if (!Number.isSafeInteger(item.seconds) || Number(item.seconds) < 1 || Number(item.seconds) > 30) throw new Error("ERR_CINEMA_PLAN_FORMAT");
             return { id: randomUUID(), title: item.title as string, prompt: item.prompt as string, seconds: Number(item.seconds), camera: item.camera as string, lens: item.lens as string, lighting: item.lighting as string, notes: item.notes as string };
         });
-        return { project: await mutateCinemaProject(project.id, input.version, current => ({ ...current, shots })), generatedMedia: false };
+        return { project: await mutateCinemaProject(project.id, input.version, current => ({ ...current, shots }), input.userId), generatedMedia: false };
     } finally { planning.__cinemaPlanning = false; }
 }

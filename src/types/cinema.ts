@@ -27,6 +27,7 @@ export interface CinemaGenerationRecord extends CinemaGeneration {
 }
 export interface CinemaProject {
     id: string;
+    userId: string;
     title: string;
     brief: string;
     aspectRatio: CinemaAspectRatio;

@@ -16,6 +16,8 @@ const originalLoad = Module._load, originalResolve = Module._resolveFilename, or
 let submissions = 0, connected = true, submitError = false, submitGate, submitStarted;
 let modelReply = "", planningCalls = 0;
 const tasks = new Map();
+const USER = "user-a";
+const sessionCookie = "hf_session=fixture-session";
 Module._resolveFilename = function (id, parent, ...rest) {
     return originalResolve.call(this, id.startsWith("@/") ? path.join(root, "src", id.slice(2)) + ".ts" : id, parent, ...rest);
 };
@@ -25,6 +27,7 @@ Module._load = function (id, parent, ...rest) {
     if (id === "@/lib/task-store") return { initStore: async () => {}, getStore: () => tasks };
     if (id === "@/lib/provider-catalog") return { openRouterCatalog: async () => [], catalogCapability: () => { throw new Error("Unused catalog fixture"); } };
     if (id === "@/lib/director") return { createShotPlan: async () => { planningCalls++; return { plan: modelReply }; } };
+    if (id === "@/lib/users") return { getRequestSessionUser: async request => request.headers.get("cookie") === sessionCookie ? { id: USER } : null };
     if (id === "@/lib/generation-service") return { submitGeneration: async input => {
         submissions++; if (submitStarted) submitStarted(); if (submitGate) await submitGate;
         if (submitError) throw new Error("fixture-sensitive-provider-detail /private/fixture/path");
@@ -41,12 +44,12 @@ const { IMAGE_CAPABILITIES } = require(path.join(root, "src/models/capabilities/
 const { NextRequest } = require("next/server");
 function shot() { return { id: randomUUID(), title: "Quiet reveal", prompt: "A ceramic cup beside a window", seconds: 5, camera: "Slow dolly", lens: "50mm close shot", lighting: "Morning side light", notes: "Keep the cup blue" }; }
 async function project() {
-    const p = await store.createCinemaProject({ title: "Fixture film", brief: "A quiet coffee film" });
-    return store.updateCinemaProject(p.id, p.version, { ...p, shots: [shot()] });
+    const p = await store.createCinemaProject({ title: "Fixture film", brief: "A quiet coffee film" }, USER);
+    return store.updateCinemaProject(p.id, p.version, { ...p, shots: [shot()] }, USER);
 }
-function input(p, extra = {}) { return { projectId: p.id, shotId: p.shots[0].id, version: p.version, requestId: randomUUID(), mediaType: "image", engine: "catalog", modelId: Object.keys(IMAGE_CAPABILITIES)[0], ...extra }; }
+function input(p, extra = {}) { return { userId: USER, projectId: p.id, shotId: p.shots[0].id, version: p.version, requestId: randomUUID(), mediaType: "image", engine: "catalog", modelId: Object.keys(IMAGE_CAPABILITIES)[0], ...extra }; }
 async function code(promise, expected) { await assert.rejects(promise, error => error.message === expected); }
-function request(route, body, origin = "http://studio.invalid") { return new NextRequest("http://studio.invalid" + route, { method: "POST", headers: { "Content-Type": "application/json", Origin: origin }, body: JSON.stringify(body) }); }
+function request(route, body, origin = "http://studio.invalid") { return new NextRequest("http://studio.invalid" + route, { method: "POST", headers: { cookie: sessionCookie, "Content-Type": "application/json", Origin: origin }, body: JSON.stringify(body) }); }
 async function main() {
     let p = await project(); const first = input(p);
     const accepted = await service.generateCinemaShot(first); p = accepted.project;
@@ -63,7 +66,7 @@ async function main() {
     tasks.get(next.taskId).status = "COMPLETED";
     connected = false;
     await code(service.generateCinemaShot(input(p)), "ERR_CINEMA_PROVIDER_NOT_CONNECTED");
-    assert.equal((await store.getCinemaProject(p.id)).version, p.version, "Missing credentials must not reserve or submit"); connected = true;
+    assert.equal((await store.getCinemaProject(p.id, USER)).version, p.version, "Missing credentials must not reserve or submit"); connected = true;
 
     const concurrent = input(p); let release;
     submitGate = new Promise(resolve => { release = resolve; });
@@ -74,16 +77,16 @@ async function main() {
 
     const uncertain = input(p); submitError = true;
     await code(service.generateCinemaShot(uncertain), "ERR_CINEMA_SUBMISSION_UNCERTAIN"); submitError = false;
-    p = await store.getCinemaProject(p.id); assert.equal(p.shots[0].image.state, "uncertain");
+    p = await store.getCinemaProject(p.id, USER); assert.equal(p.shots[0].image.state, "uncertain");
     assert.equal(p.shots[0].image.error, "ERR_CINEMA_SUBMISSION_UNCERTAIN");
     assert(!JSON.stringify(p).includes("fixture-sensitive-provider-detail"));
     const count = submissions;
     await code(service.generateCinemaShot(uncertain), "ERR_CINEMA_SUBMISSION_UNCERTAIN");
     await code(service.generateCinemaShot(input(p)), "ERR_CINEMA_BUSY"); assert.equal(submissions, count);
     tasks.set("recovered_task", { task_id: "recovered_task", media_type: "image", status: "COMPLETED", reuse_state: { cinema: { projectId: p.id, shotId: uncertain.shotId, requestId: uncertain.requestId } } });
-    const recovered = await service.cinemaSubmissionStatus(p.id, uncertain.requestId); p = recovered.project;
+    const recovered = await service.cinemaSubmissionStatus(p.id, uncertain.requestId, USER); p = recovered.project;
     assert.equal(recovered.taskId, "recovered_task"); assert.equal(submissions, count); assert.equal(p.shots[0].image.state, "accepted"); assert(!p.shots[0].image.error);
-    await code(service.cinemaSubmissionStatus(p.id, randomUUID()), "ERR_CINEMA_REQUEST_NOT_FOUND");
+    await code(service.cinemaSubmissionStatus(p.id, randomUUID(), USER), "ERR_CINEMA_REQUEST_NOT_FOUND");
 
     const caps = IMAGE_CAPABILITIES[first.modelId];
     assert.match(service.cinemaParams(p, p.shots[0], input(p), caps).prompt, /Camera direction: Slow dolly/);
@@ -94,16 +97,16 @@ async function main() {
     assert.throws(() => service.cinemaParams(p, p.shots[0], input(p, { duration: "999" }), caps), /ERR_CINEMA_DURATION_UNSUPPORTED/);
     assert.throws(() => service.cinemaParams(p, p.shots[0], input(p, { resolution: "invented" }), caps), /ERR_CINEMA_RESOLUTION_UNSUPPORTED/);
 
-    const draft = await project(), planInput = { projectId: draft.id, version: draft.version, engine: "ollama", model: "fixture-model", shotCount: 2 };
+    const draft = await project(), planInput = { userId: USER, projectId: draft.id, version: draft.version, engine: "ollama", model: "fixture-model", shotCount: 2 };
     modelReply = "Not JSON";
-    await code(service.planCinemaProject(planInput), "ERR_CINEMA_PLAN_FORMAT"); assert.equal((await store.getCinemaProject(draft.id)).version, draft.version);
+    await code(service.planCinemaProject(planInput), "ERR_CINEMA_PLAN_FORMAT"); assert.equal((await store.getCinemaProject(draft.id, USER)).version, draft.version);
     modelReply = JSON.stringify({ shots: Array.from({ length: 2 }, () => ({ ...shot(), id: undefined })) });
     const planned = await service.planCinemaProject(planInput); assert.equal(planned.project.shots.length, 2); assert.equal(planned.generatedMedia, false); assert.equal(planningCalls, 2); assert.equal(submissions, count);
     assert.notEqual(planned.project.shots[0].id, planned.project.shots[1].id);
 
     const route = require(path.join(root, "src/app/api/cinema/generate/route.ts"));
     const wrong = await route.POST(request("/api/cinema/generate", input(p), "https://untrusted.invalid")); assert.equal(wrong.status, 403); assert.equal(wrong.headers.get("cache-control"), "private, no-store");
-    const status = await route.GET(new NextRequest(`http://studio.invalid/api/cinema/generate?projectId=${p.id}&requestId=${uncertain.requestId}`));
+    const status = await route.GET(new NextRequest(`http://studio.invalid/api/cinema/generate?projectId=${p.id}&requestId=${uncertain.requestId}`, { headers: { cookie: sessionCookie } }));
     assert.equal(status.status, 200); assert.equal((await status.json()).taskId, "recovered_task"); assert.equal(submissions, count);
     const failed = await route.POST(request("/api/cinema/generate", { ...input(p), version: 1 })); assert.equal(failed.status, 409);
     const failedBody = await failed.json(); assert.equal(failedBody.project.id, p.id); assert.equal(failedBody.error, "ERR_CINEMA_VERSION_CONFLICT");

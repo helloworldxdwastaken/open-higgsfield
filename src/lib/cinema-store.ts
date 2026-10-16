@@ -95,9 +95,9 @@ function shots(value: unknown, trusted: boolean): CinemaShot[] {
 }
 function project(value: unknown): CinemaProject {
     const input = record(value);
-    fields(input, ["id", "title", "brief", "aspectRatio", "shots", "generationHistory", "version", "createdAt", "updatedAt"]);
+    fields(input, ["id", "userId", "title", "brief", "aspectRatio", "shots", "generationHistory", "version", "createdAt", "updatedAt"]);
     return {
-        id: uuid(input.id), title: text(input.title, 120), brief: text(input.brief, 12000), aspectRatio: aspectRatio(input.aspectRatio),
+        id: uuid(input.id), userId: typeof input.userId === "string" && input.userId ? text(input.userId, 128) : "", title: text(input.title, 120), brief: text(input.brief, 12000), aspectRatio: aspectRatio(input.aspectRatio),
         shots: shots(input.shots, true), generationHistory: history(input.generationHistory), version: version(input.version),
         createdAt: timestamp(input.createdAt), updatedAt: timestamp(input.updatedAt),
     };
@@ -186,17 +186,20 @@ function find(projects: CinemaProject[], id: string): CinemaProject {
 }
 function copy<T>(value: T): T { return structuredClone(value); }
 
-export async function listCinemaProjects(): Promise<CinemaProjectSummary[]> {
-    return serialized(async location => (await read(location)).map(entry => ({
+export async function listCinemaProjects(userId: string): Promise<CinemaProjectSummary[]> {
+    if (!userId || userId.length > 128) invalid();
+    return serialized(async location => (await read(location)).filter(entry => entry.userId === userId).map(entry => ({
         id: entry.id, title: entry.title, aspectRatio: entry.aspectRatio, updatedAt: entry.updatedAt,
         shotCount: entry.shots.length, seconds: entry.shots.reduce((total, shot) => total + shot.seconds, 0),
     })).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)));
 }
-export async function getCinemaProject(id: string): Promise<CinemaProject | undefined> {
+export async function getCinemaProject(id: string, userId: string): Promise<CinemaProject | undefined> {
     id = uuid(id);
-    return serialized(async location => (await read(location)).find(entry => entry.id === id));
+    if (!userId || userId.length > 128) invalid();
+    return serialized(async location => (await read(location)).find(entry => entry.id === id && entry.userId === userId));
 }
-export async function createCinemaProject(input: { title?: string; brief?: string; aspectRatio?: CinemaAspectRatio }): Promise<CinemaProject> {
+export async function createCinemaProject(input: { title?: string; brief?: string; aspectRatio?: CinemaAspectRatio }, userId: string): Promise<CinemaProject> {
+    if (!userId || userId.length > 128) invalid();
     const values = record(input);
     fields(values, ["title", "brief", "aspectRatio"]);
     const title = values.title === undefined ? "Untitled project" : text(values.title, 120).trim() || "Untitled project";
@@ -206,18 +209,18 @@ export async function createCinemaProject(input: { title?: string; brief?: strin
         const projects = await read(location);
         if (projects.length >= 50) throw new Error("ERR_CINEMA_LIMIT");
         const now = new Date().toISOString();
-        const created: CinemaProject = { id: randomUUID(), title, brief, aspectRatio: ratio, shots: [], generationHistory: [], version: 1, createdAt: now, updatedAt: now };
+        const created: CinemaProject = { id: randomUUID(), userId, title, brief, aspectRatio: ratio, shots: [], generationHistory: [], version: 1, createdAt: now, updatedAt: now };
         await write(location, [...projects, created]);
         return copy(created);
     });
 }
-export async function mutateCinemaProject(id: string, expectedVersion: number | undefined, transform: (project: CinemaProject) => CinemaProject): Promise<CinemaProject> {
+export async function mutateCinemaProject(id: string, expectedVersion: number | undefined, transform: (project: CinemaProject) => CinemaProject, userId: string): Promise<CinemaProject> {
     id = uuid(id);
     if (expectedVersion !== undefined) version(expectedVersion);
     if (typeof transform !== "function") invalid();
     return serialized(async location => {
         const projects = await read(location);
-        const previous = find(projects, id);
+        const previous = find(projects.filter(entry => entry.userId === userId), id);
         checkVersion(previous, expectedVersion);
         const transformed = project(transform(copy(previous)));
         if (transformed.id !== previous.id || transformed.createdAt !== previous.createdAt || transformed.version !== previous.version) invalid();
@@ -227,11 +230,11 @@ export async function mutateCinemaProject(id: string, expectedVersion: number | 
         return copy(next);
     });
 }
-export async function updateCinemaProject(id: string, expectedVersion: number, input: { title: string; brief: string; aspectRatio: CinemaAspectRatio; shots: CinemaShot[] }): Promise<CinemaProject> {
+export async function updateCinemaProject(id: string, expectedVersion: number, input: { title: string; brief: string; aspectRatio: CinemaAspectRatio; shots: CinemaShot[] }, userId: string): Promise<CinemaProject> {
     version(expectedVersion);
     const values = record(input);
     // Draft callers can round-trip a returned project; all server-owned values are ignored.
-    fields(values, ["title", "brief", "aspectRatio", "shots", "generationHistory", "id", "version", "createdAt", "updatedAt"]);
+    fields(values, ["userId", "title", "brief", "aspectRatio", "shots", "generationHistory", "id", "version", "createdAt", "updatedAt"]);
     const title = text(values.title, 120);
     const brief = text(values.brief, 12000);
     const ratio = aspectRatio(values.aspectRatio);
@@ -242,13 +245,13 @@ export async function updateCinemaProject(id: string, expectedVersion: number, i
             const saved = previous.shots.find(entry => entry.id === draft.id);
             return { ...draft, ...(saved?.image ? { image: saved.image } : {}), ...(saved?.video ? { video: saved.video } : {}) };
         }),
-    }));
+    }), userId);
 }
-export async function deleteCinemaProject(id: string, expectedVersion: number): Promise<void> {
+export async function deleteCinemaProject(id: string, expectedVersion: number, userId: string): Promise<void> {
     id = uuid(id); version(expectedVersion);
     await serialized(async location => {
         const projects = await read(location);
-        const current = find(projects, id);
+        const current = find(projects.filter(entry => entry.userId === userId), id);
         checkVersion(current, expectedVersion);
         if (current.shots.some(shot => busyJob(shot.image) || busyJob(shot.video)) || current.generationHistory.some(busyJob)) throw new Error("ERR_CINEMA_BUSY");
         await write(location, projects.filter(entry => entry.id !== id));
