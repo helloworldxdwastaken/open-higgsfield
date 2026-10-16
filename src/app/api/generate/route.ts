@@ -27,7 +27,7 @@ async function generateVideo(req: NextRequest, userId: string) {
 
   // ── Parse canonical params from FormData ─────────────────────────────────
   const workflow = String(form.get("workflow") ?? "").trim();
-  const defaultFeature = workflow === "influencer_generation" || workflow === "supercomputer_generation" || workflow === "katana_generation" ? workflow : "video_generation";
+  const defaultFeature = ["influencer_generation", "supercomputer_generation", "katana_generation", "genjutsu_motion_transfer", "genjutsu_object_swap"].includes(workflow) ? workflow : "video_generation";
   const modelId = String(form.get("model_id") ?? "").trim() || await getFeatureModel(defaultFeature) || "";
   const caps = VIDEO_CAPABILITIES[modelId];
   if (!caps) {

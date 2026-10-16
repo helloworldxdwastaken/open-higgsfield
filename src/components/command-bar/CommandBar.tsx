@@ -465,7 +465,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
             if (!detail || typeof detail.modelId !== "string") return;
             if (detail.mediaType === "video" && Object.hasOwn(VIDEO_CAPABILITIES, detail.modelId)) {
                 onModeChange("video");
-                setVideoWorkflow(typeof detail.workflowFeature === "string" && ["influencer_generation", "supercomputer_generation", "katana_generation"].includes(detail.workflowFeature) ? detail.workflowFeature : "");
+                setVideoWorkflow(typeof detail.workflowFeature === "string" && ["influencer_generation", "supercomputer_generation", "katana_generation", "genjutsu_motion_transfer", "genjutsu_object_swap"].includes(detail.workflowFeature) ? detail.workflowFeature : "");
                 const caps = VIDEO_CAPABILITIES[detail.modelId];
                 handleVideoModelChange(detail.modelId, caps.resolution_variant ? caps.resolution_variant.default || caps.resolution_variant.options?.[0] || "" : "");
             } else if (detail.mediaType === "image" && Object.hasOwn(IMAGE_CAPABILITIES, detail.modelId)) {
