@@ -21,6 +21,7 @@ const memStore = g.__taskMemStore;
 
 const SAVE_FIELDS: (keyof AnyTask)[] = [
     "task_id", "status", "provider_id", "provider_model_id", "provider_task_id", "provider_operation",
+    "user_id",
     "freepik_task_id", "freepik_status",
     "prompt", "params", "model_id", "poll_url",
     "created_at", "media_type", "response_style", "result_paths", "result_urls",
@@ -140,15 +141,19 @@ export function getStore() {
     return memStore;
 }
 
-export function getTask(taskId: string) {
-    return memStore.get(taskId);
+export function getTask(taskId: string, userId?: string) {
+    const task = memStore.get(taskId);
+    if (!task) return undefined;
+    if (userId && task.user_id !== userId) return undefined;
+    return task;
 }
 
 export function setTask(task: AnyTask & { events: NonNullable<AnyTask["events"]>; _done: boolean }) {
     memStore.set(task.task_id, task);
 }
 
-export async function deleteTask(taskId: string) {
+export async function deleteTask(taskId: string, userId?: string) {
+    if (!getTask(taskId, userId)) return;
     memStore.delete(taskId);
     // Join the same queue as pollers before deleting the database row, so an
     // older queued snapshot cannot restore a task the owner just removed.
@@ -167,15 +172,15 @@ export function pushEvent(taskId: string, event: NonNullable<AnyTask["events"]>[
     saveTasks().catch((e) => console.error("[task-store] save error:", e));
 }
 
-export function getVideoTasks(): VideoTask[] {
+export function getVideoTasks(userId?: string): VideoTask[] {
     return [...memStore.values()]
-        .filter((t) => t.media_type === "video")
+        .filter((t) => t.media_type === "video" && (!userId || t.user_id === userId))
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()) as VideoTask[];
 }
 
-export function getImageTasks(): ImageTask[] {
+export function getImageTasks(userId?: string): ImageTask[] {
     return [...memStore.values()]
-        .filter((t) => t.media_type === "image")
+        .filter((t) => t.media_type === "image" && (!userId || t.user_id === userId))
         .map((t) => {
             const imageTask = t as ImageTask;
             return {

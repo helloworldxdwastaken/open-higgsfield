@@ -40,6 +40,10 @@ async function ensureSchema(): Promise<void> {
                 $$
             `;
             await sql`
+                ALTER TABLE generation_tasks
+                ADD COLUMN IF NOT EXISTS user_id TEXT
+            `;
+            await sql`
                 DO $$
                 BEGIN
                     CREATE INDEX generation_tasks_created_at_idx
@@ -48,6 +52,10 @@ async function ensureSchema(): Promise<void> {
                     WHEN duplicate_table OR duplicate_object OR unique_violation THEN NULL;
                 END
                 $$
+            `;
+            await sql`
+                CREATE INDEX IF NOT EXISTS generation_tasks_user_id_idx
+                ON generation_tasks (user_id)
             `;
         })();
     }
@@ -83,6 +91,7 @@ export async function persistTasks(tasks: AnyTask[]): Promise<void> {
             media_type = EXCLUDED.media_type,
             status = EXCLUDED.status,
             payload = EXCLUDED.payload,
+            user_id = EXCLUDED.user_id,
             updated_at = NOW()
     `));
 }

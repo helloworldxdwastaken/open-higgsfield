@@ -33,6 +33,7 @@ Module._load = function (id, parent, ...rest) {
     if (id === "@/providers/higgsfield-media") return { higgsfieldInput: async () => { throw new Error("Unexpected native upload"); } };
     if (id === "@/lib/connections") return { refreshConnections: () => {} };
     if (id === "@/lib/upload") return { saveInputLocally: async () => "/api/uploaded/fixture.png", uploadToTmpfiles: media };
+    if (id === "@/lib/users") return { getRequestSessionUser: async () => ({ id: "fixture-user" }) };
     return originalLoad.call(this, id, parent, ...rest);
 };
 process.env.STUDIO_PUBLIC_ORIGIN = origin;

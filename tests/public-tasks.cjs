@@ -14,6 +14,8 @@ const originalResolve = Module._resolveFilename;
 const originalLoad = Module._load;
 const originalFetch = global.fetch;
 let current;
+const sessionCookie = "hf_session=fixture-session";
+const fixtureUser = { id: "fixture-user" };
 Module._resolveFilename = function (id, parent, ...rest) {
     return originalResolve.call(this, id.startsWith("@/") ? path.join(root, "src", id.slice(2)) + ".ts" : id, parent, ...rest);
 };
@@ -26,6 +28,7 @@ Module._load = function (id, parent, ...rest) {
         getVideoTasks: () => [current], getImageTasks: () => [current],
     };
     if (id === "@/lib/storage-paths") return { STORAGE_ROOT: storage };
+    if (id === "@/lib/users") return { getRequestSessionUser: async request => request.headers.get("cookie") === sessionCookie ? fixtureUser : null };
     return originalLoad.call(this, id, parent, ...rest);
 };
 global.fetch = async () => { throw new Error("Fixture attempted a network request"); };
@@ -80,10 +83,14 @@ async function main() {
     assert.deepEqual(toPublicTaskEvent(video, { type: "status", status: "IN_PROGRESS", elapsed: 4 }), { type: "status", status: "IN_PROGRESS", elapsed: 4 });
 
     current = video;
-    const videos = await require(path.join(root, "src/app/api/tasks/route.ts")).GET();
+    const anonymousVideos = await require(path.join(root, "src/app/api/tasks/route.ts")).GET(new NextRequest("http://studio.invalid/api/tasks"));
+    assert.equal(anonymousVideos.status, 401); assertPrivateHeaders(anonymousVideos);
+    const videos = await require(path.join(root, "src/app/api/tasks/route.ts")).GET(new NextRequest("http://studio.invalid/api/tasks", { headers: { cookie: sessionCookie } }));
     assertPrivateHeaders(videos); assertPublic(await videos.json());
     current = image;
-    const images = await require(path.join(root, "src/app/api/image-tasks/route.ts")).GET();
+    const anonymousImages = await require(path.join(root, "src/app/api/image-tasks/route.ts")).GET(new NextRequest("http://studio.invalid/api/image-tasks"));
+    assert.equal(anonymousImages.status, 401); assertPrivateHeaders(anonymousImages);
+    const images = await require(path.join(root, "src/app/api/image-tasks/route.ts")).GET(new NextRequest("http://studio.invalid/api/image-tasks", { headers: { cookie: sessionCookie } }));
     assertPrivateHeaders(images); assertPublic(await images.json());
 
     const mcp = require(path.join(root, "src/app/api/mcp/route.ts"));
@@ -128,7 +135,7 @@ async function main() {
     current = { ...image, result_paths: [], result_urls: [privateUrl] };
     const remoteOnly = await gallery.POST(request({ task_id: "fixture-job" }));
     assert.equal(remoteOnly.status, 400); assertPublic(await remoteOnly.json());
-    console.log("Public task privacy contracts passed: DTOs, SSE, private cache headers and gallery handles; no network requests.");
+    console.log("Public task privacy contracts passed: authentication, DTOs, SSE, private cache headers and gallery handles; no network requests.");
 }
 main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => {
     global.fetch = originalFetch; Module._load = originalLoad; Module._resolveFilename = originalResolve;

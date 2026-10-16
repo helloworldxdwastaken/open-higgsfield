@@ -37,6 +37,7 @@ export interface TaskEvent {
 
 export interface VideoTask {
     task_id: string;
+    user_id?: string;
     status?: string;
     provider_id?: "freepik" | "google-ai-studio" | "google-vertex" | "vercel-ai-gateway";
     provider_model_id?: string;
@@ -64,6 +65,7 @@ export interface VideoTask {
 
 export interface ImageTask {
     task_id: string;
+    user_id?: string;
     status?: string;
     provider_id?: "freepik" | "google-ai-studio" | "google-vertex" | "vercel-ai-gateway";
     provider_model_id?: string;

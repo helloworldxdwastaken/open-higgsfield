@@ -6,17 +6,20 @@ import { processImageUpload, processFileUpload, resolveUrl } from "@/lib/media-u
 import { higgsfieldInput } from "@/providers/higgsfield-media";
 import { refreshConnections } from "@/lib/connections";
 import { publicErrorMessage } from "@/lib/public-error";
+import { getRequestSessionUser } from "@/lib/users";
 import type { CanonicalParams, CanonicalMediaInputs } from "@/models/canonical";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
-  try { return await generateVideo(req); }
+  const user = await getRequestSessionUser(req);
+  if (!user) return NextResponse.json({ error: "ERR_AUTHENTICATION_REQUIRED" }, { status: 401 });
+  try { return await generateVideo(req, user.id); }
   catch (error) { return NextResponse.json({ error: publicErrorMessage(error) }, { status: 500 }); }
 }
 
-async function generateVideo(req: NextRequest) {
+async function generateVideo(req: NextRequest, userId: string) {
   const origin = req.headers.get("origin");
   if (!origin || origin !== process.env.STUDIO_PUBLIC_ORIGIN) return NextResponse.json({ error: "Studio origin required." }, { status: 403 });
   const form = await req.formData();
@@ -88,7 +91,7 @@ async function generateVideo(req: NextRequest) {
           else nativeImages[`${slot.id}_${index}`] = resolved;
         }
       }
-      const taskId = await submitGeneration({ mediaType: "video", modelId, capabilities: caps, params: canonicalParams, media: { images: nativeImages, video: nativeVideo }, reuseState: { settings } });
+      const taskId = await submitGeneration({ userId, mediaType: "video", modelId, capabilities: caps, params: canonicalParams, media: { images: nativeImages, video: nativeVideo }, reuseState: { settings } });
       return NextResponse.json({ task_id: taskId });
     } catch (error) { return NextResponse.json({ error: publicErrorMessage(error) }, { status: 400 }); }
   }
@@ -182,6 +185,7 @@ async function generateVideo(req: NextRequest) {
   // ── Submit through the selected provider ─────────────────────────────────
   try {
     const taskId = await submitGeneration({
+      userId,
       mediaType: "video",
       modelId,
       capabilities: caps,

@@ -148,6 +148,10 @@ export async function getSessionUser(token: string | undefined): Promise<Session
     return { id: row.id, email: row.email, role: row.role as "admin" | "user", active: row.active, created_at: row.created_at, sessionId: row.session_id };
 }
 
+export async function getRequestSessionUser(request: Request): Promise<SessionUser | null> {
+    return getSessionUser(readSessionCookie(request.headers.get("cookie")));
+}
+
 export function readSessionCookie(cookieHeader: string | null): string | undefined {
     if (!cookieHeader) return undefined;
     const match = cookieHeader.match(new RegExp(`${SESSION_COOKIE}=([^;]+)`));

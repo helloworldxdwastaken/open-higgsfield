@@ -4,17 +4,20 @@ import { getImageAdapter } from "@/models/adapters/image";
 import { saveInputLocally, uploadToTmpfiles } from "@/lib/upload";
 import { submitGeneration } from "@/lib/generation-service";
 import { publicErrorMessage } from "@/lib/public-error";
+import { getRequestSessionUser } from "@/lib/users";
 import type { CanonicalParams, CanonicalMediaInputs } from "@/models/canonical";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 export async function POST(req: NextRequest) {
-  try { return await generateImage(req); }
+  const user = await getRequestSessionUser(req);
+  if (!user) return NextResponse.json({ error: "ERR_AUTHENTICATION_REQUIRED" }, { status: 401 });
+  try { return await generateImage(req, user.id); }
   catch (error) { return NextResponse.json({ error: publicErrorMessage(error) }, { status: 500 }); }
 }
 
-async function generateImage(req: NextRequest) {
+async function generateImage(req: NextRequest, userId: string) {
   const form = await req.formData();
 
   // ── Model lookup ──────────────────────────────────────────────────────────
@@ -106,6 +109,7 @@ async function generateImage(req: NextRequest) {
   // ── Submit ────────────────────────────────────────────────────────────────
   try {
     const taskId = await submitGeneration({
+      userId,
       mediaType: "image",
       modelId,
       capabilities: caps,

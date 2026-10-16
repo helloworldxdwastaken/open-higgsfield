@@ -37,7 +37,7 @@ Module._extensions['.ts'] = (mod, name) => mod._compile(ts.transpileModule(fs.re
     }
     const writes = [];
     for (let index = 0; index < 20; index++) {
-        store.setTask({ task_id: `fixture-${index}`, status: index === 19 ? 'IN_PROGRESS' : 'COMPLETED', media_type: 'video', model_id: 'fixture-model', provider_id: 'higgsfield',
+        store.setTask({ task_id: `fixture-${index}`, user_id: index % 2 ? 'user-b' : 'user-a', status: index === 19 ? 'IN_PROGRESS' : 'COMPLETED', media_type: 'video', model_id: 'fixture-model', provider_id: 'higgsfield',
             provider_operation: index === 19 ? { requestId: 'accepted-provider-id' } : undefined, created_at: new Date().toISOString(), prompt: 'fixture', events: [], _done: index !== 19 });
         writes.push(store.saveTasks());
     }
@@ -50,9 +50,14 @@ Module._extensions['.ts'] = (mod, name) => mod._compile(ts.transpileModule(fs.re
     assert.equal(child.status, 0, child.stderr);
     assert(child.stdout.trim(), 'Hydration process returned no evidence');
     assert.equal(JSON.parse(child.stdout).pendingJobResumedWithSameId, true);
+    assert.equal(store.getVideoTasks('user-a').length, 10);
+    assert.equal(store.getVideoTasks('user-b').length, 10);
+    assert.equal(store.getTask('fixture-1', 'user-a'), undefined);
+    await store.deleteTask('fixture-1', 'user-a');
+    assert(store.getTask('fixture-1'), 'A different user must not delete another users task');
     await Promise.all([store.saveTasks(), store.deleteTask('fixture-0'), store.saveTasks()]);
     const afterDelete = JSON.parse(fs.readFileSync(path.join(directory, 'tasks_history.json'), 'utf8'));
     assert.equal(afterDelete.length, 19);
     assert(!afterDelete.some(task => task.task_id === 'fixture-0'));
-    console.log(JSON.stringify({ concurrentAtomicHistory: true, concurrentDeletion: true, processRestart: true, acceptedOperationPreserved: true, noProviderCalls: true }));
+    console.log(JSON.stringify({ concurrentAtomicHistory: true, concurrentDeletion: true, processRestart: true, acceptedOperationPreserved: true, scopedTaskAccess: true, noProviderCalls: true }));
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => { if (!process.argv.includes('--hydrate')) fs.rmSync(directory, { recursive: true, force: true }); });

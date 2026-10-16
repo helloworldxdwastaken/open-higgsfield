@@ -10,6 +10,7 @@ import { resolveProvider } from "@/providers/registry";
 import type { AnyTask, TaskEvent } from "@/types";
 
 interface SubmitGenerationInput {
+    userId?: string;
     mediaType: "image" | "video";
     modelId: string;
     capabilities: ModelCapabilities;
@@ -35,6 +36,7 @@ export async function submitGeneration(input: SubmitGenerationInput): Promise<st
     const events: TaskEvent[] = [];
     const task = {
         task_id: taskId,
+        user_id: input.userId,
         status: submission.status,
         freepik_status: submission.status,
         provider_id: providerId,
