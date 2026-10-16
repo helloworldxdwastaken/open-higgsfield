@@ -22,6 +22,7 @@ type Workflow = {
   description: string;
   art: "cinema" | "motion" | "swap" | "katana" | "canvas" | "ads";
   modelId?: string;
+  feature?: "influencer_generation" | "supercomputer_generation";
   status: string;
   detail: string;
 };
@@ -33,6 +34,8 @@ const workflows: Workflow[] = [
   { id: "katana", title: "Katana", eyebrow: "REFERENCE TO RECREATION", description: "The edit is the reference.", art: "katana", status: "Workflow not connected", detail: "A complete reference-edit workflow needs shot analysis, replacement-shot generation and a renderer. That orchestration has not been implemented in Highfield yet. You can create individual replacement shots in the video studio and connect a planning model from Providers." },
   { id: "canvas", title: "Canvas", eyebrow: "CONNECT YOUR IDEAS", description: "A space for the bigger picture.", art: "canvas", status: "Workflow not connected", detail: "An executable node canvas requires saved boards, typed connections and a durable workflow runner. Those features are not connected yet. Image and video jobs currently run in their dedicated studios and appear in your Library." },
   { id: "ads", title: "Ads Studio", eyebrow: "MAKE THE NEXT VARIATION", description: "One product. More possibilities.", art: "ads", status: "Workflow not connected", detail: "Brand libraries, ad variants and batch video editing are not implemented yet. You can make individual product visuals with a connected image model. Highfield does not currently provide Higgsfield's Ad Multiplier workflow." },
+  { id: "influencer", title: "Influencer", eyebrow: "CHARACTER FORWARD", description: "Create social-ready character video.", art: "motion", feature: "influencer_generation", status: "Video workflow", detail: "Open the video composer with the Influencer model selected in the admin console. Attachment and control options follow that model's capabilities." },
+  { id: "supercomputer", title: "Supercomputer", eyebrow: "HEAVY VIDEO TASKS", description: "Run demanding generative video work.", art: "katana", feature: "supercomputer_generation", status: "Video workflow", detail: "Open the video composer with the Supercomputer model selected in the admin console. The selected provider handles the video job and stored output remains user-isolated." },
 ];
 
 export function StudioShell({ initialMode = "image", initialView = "explore", audioStudioUrl }: { initialMode?: MediaMode; initialView?: StudioView; audioStudioUrl?: string }) {
@@ -75,6 +78,23 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
 
    function openWorkflow(workflow: Workflow) {
      if (workflow.id === "cinema") { router.push(`${prefix}/cinema`); return; }
+    if (workflow.feature) {
+      navigate("create", "video");
+      void (async () => {
+        let modelId = workflow.modelId || Object.keys(VIDEO_CAPABILITIES)[0];
+        try {
+          const response = await fetch("/api/model-defaults", { cache: "no-store" });
+          if (response.ok) {
+            const data = await response.json() as { settings?: Record<string, string | null> };
+            modelId = data.settings?.[workflow.feature!] || modelId;
+          }
+        } catch { modelId = workflow.modelId || Object.keys(VIDEO_CAPABILITIES)[0]; }
+        if (VIDEO_CAPABILITIES[modelId]) {
+          window.dispatchEvent(new CustomEvent("highfield:select-model", { detail: { mediaType: "video", modelId, workflowFeature: workflow.feature } }));
+        }
+      })();
+      return;
+    }
     const modelAvailable = workflow.modelId && Boolean(VIDEO_CAPABILITIES[workflow.modelId]);
     setDialog({
       title: workflow.title,
@@ -120,6 +140,8 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
               <button className="hf-feature-card" onClick={() => { router.push(`${prefix}/cinema`); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Film size={17} /></span><span className="hf-feature-card-badge">New</span></div><strong>Cinema Studio 4.0</strong><span>Create cinematic scenes effortlessly with saved projects and shot planning.</span></button>
               <button className="hf-feature-card" onClick={() => { selectVideoTab("motion"); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Video size={17} /></span><span className="hf-feature-card-badge">API</span></div><strong>Genjutsu Motion Transfer</strong><span>One video in. A new perspective out, with the same motion.</span></button>
               <button className="hf-feature-card" onClick={() => openWorkflow(workflows[2])}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Layers3 size={17} /></span><span className="hf-feature-card-badge">API</span></div><strong>Genjutsu Object Swap</strong><span>Reimagine the subject inside your shot with a direct API call.</span></button>
+              <button className="hf-feature-card" onClick={() => openWorkflow(workflows[7])}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Video size={17} /></span><span className="hf-feature-card-badge">Model</span></div><strong>Influencer</strong><span>Create social-ready character video with the admin-selected model.</span></button>
+              <button className="hf-feature-card" onClick={() => openWorkflow(workflows[8])}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Video size={17} /></span><span className="hf-feature-card-badge">Model</span></div><strong>Supercomputer</strong><span>Run demanding generative video work with the admin-selected model.</span></button>
               <button className="hf-feature-card" onClick={openApi}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Code2 size={17} /></span></div><strong>MCP for local agents</strong><span>Read-only tools for model discovery and job history, exposed at /api/mcp.</span></button>
               <button className="hf-feature-card" onClick={openAudio}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><AudioLines size={17} /></span></div><strong>Voicebox audio</strong><span>Voice creation, profiles and narration through your connected audio studio.</span></button>
               <button className="hf-feature-card" onClick={() => { router.push(`${prefix}/presets`); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Sparkles size={17} /></span><span className="hf-feature-card-badge">New</span></div><strong>Visual Effects</strong><span>45 effect drafts with curated prompt interpretations and public examples.</span></button>

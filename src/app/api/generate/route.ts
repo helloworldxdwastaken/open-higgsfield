@@ -26,7 +26,9 @@ async function generateVideo(req: NextRequest, userId: string) {
   const form = await req.formData();
 
   // ── Parse canonical params from FormData ─────────────────────────────────
-  const modelId = String(form.get("model_id") ?? "").trim() || await getFeatureModel("video_generation") || "";
+  const workflow = String(form.get("workflow") ?? "").trim();
+  const defaultFeature = workflow === "influencer_generation" || workflow === "supercomputer_generation" ? workflow : "video_generation";
+  const modelId = String(form.get("model_id") ?? "").trim() || await getFeatureModel(defaultFeature) || "";
   const caps = VIDEO_CAPABILITIES[modelId];
   if (!caps) {
     return NextResponse.json({ error: `ERR_UNKNOWN_MODEL: ${modelId}` }, { status: 400 });

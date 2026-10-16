@@ -58,6 +58,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
         defaultSettings(VIDEO_CAPABILITIES[firstVideoId])
     );
     const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
+    const [videoWorkflow, setVideoWorkflow] = useState("");
 
     // ── Image state ──
     const firstImageId = Object.keys(IMAGE_CAPABILITIES)[0];
@@ -336,6 +337,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
         setVideoModelId(id);
         setVideoVariantId(varId);
         setVideoSettings(defaultSettings(VIDEO_CAPABILITIES[id], varId));
+        setVideoWorkflow("");
     }, [videoModelId, firstVideoId]);
 
     const handleImageModelChange = useCallback((id: string) => {
@@ -463,6 +465,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
             if (!detail || typeof detail.modelId !== "string") return;
             if (detail.mediaType === "video" && Object.hasOwn(VIDEO_CAPABILITIES, detail.modelId)) {
                 onModeChange("video");
+                setVideoWorkflow(typeof detail.workflowFeature === "string" && ["influencer_generation", "supercomputer_generation"].includes(detail.workflowFeature) ? detail.workflowFeature : "");
                 const caps = VIDEO_CAPABILITIES[detail.modelId];
                 handleVideoModelChange(detail.modelId, caps.resolution_variant ? caps.resolution_variant.default || caps.resolution_variant.options?.[0] || "" : "");
             } else if (detail.mediaType === "image" && Object.hasOwn(IMAGE_CAPABILITIES, detail.modelId)) {
@@ -480,6 +483,7 @@ export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBar
             const body = new FormData();
             body.append("model_id", videoModelId);
             body.append("variant_id", videoVariantId);
+            body.append("workflow", videoWorkflow);
             body.append("prompt", data.prompt);
             body.append("settings", JSON.stringify(videoSettings));
             for (const att of attachments) {
