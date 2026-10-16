@@ -1,12 +1,9 @@
 import { randomBytes, scrypt as scryptCb, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
-import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
+import { getSql } from "@/lib/database-client";
 
 const scrypt = promisify(scryptCb) as (p: string | Buffer, s: string | Buffer, k: number) => Promise<Buffer>;
 
-type SqlClient = NeonQueryFunction<false, false>;
-
-let sqlClient: SqlClient | null = null;
 let schemaPromise: Promise<void> | null = null;
 
 export type PlatformUser = {
@@ -18,14 +15,6 @@ export type PlatformUser = {
 };
 
 export type SessionUser = PlatformUser & { sessionId: string };
-
-function getSql(): SqlClient {
-    if (sqlClient) return sqlClient;
-    const databaseUrl = process.env.DATABASE_URL;
-    if (!databaseUrl) throw new Error("DATABASE_URL is not configured");
-    sqlClient = neon(databaseUrl);
-    return sqlClient;
-}
 
 async function ensureSchema(): Promise<void> {
     if (!schemaPromise) {
@@ -63,7 +52,7 @@ async function ensureSchema(): Promise<void> {
 export async function countUsers(): Promise<number> {
     await ensureSchema();
     const rows = await getSql()`SELECT COUNT(*)::int AS count FROM platform_users`;
-    return rows[0]?.count ?? 0;
+    return Number(rows[0]?.count ?? 0);
 }
 
 export async function hashPassword(password: string): Promise<string> {

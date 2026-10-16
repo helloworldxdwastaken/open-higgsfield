@@ -1,22 +1,9 @@
-import { neon, type NeonQueryFunction } from "@neondatabase/serverless";
 import type { AnyTask } from "@/types";
+import { getSql, isDatabaseConfigured } from "@/lib/database-client";
 
-type SqlClient = NeonQueryFunction<false, false>;
+export { isDatabaseConfigured };
 
-let sqlClient: SqlClient | null = null;
 let schemaPromise: Promise<void> | null = null;
-
-export function isDatabaseConfigured(): boolean {
-    return Boolean(process.env.DATABASE_URL) && process.env.NEXT_PHASE !== "phase-production-build";
-}
-
-function getSql(): SqlClient {
-    if (sqlClient) return sqlClient;
-    const databaseUrl = process.env.DATABASE_URL;
-    if (!databaseUrl) throw new Error("DATABASE_URL is not configured");
-    sqlClient = neon(databaseUrl);
-    return sqlClient;
-}
 
 async function ensureSchema(): Promise<void> {
     if (!isDatabaseConfigured()) return;
