@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
 import { useRouter } from "next/navigation";
-import { ArrowDownToLine, ArrowUpRight, AudioLines, ChevronRight, Code2, Film, Grid2X2, Image as ImageIcon, Layers3, SlidersHorizontal, Sparkles, Video, X } from "lucide-react";
+import { ArrowDownToLine, ArrowUpRight, AudioLines, ChevronRight, Code2, Film, Grid2X2, Image as ImageIcon, Layers3, Sparkles, Video, X } from "lucide-react";
 import { CommandBar } from "@/components/command-bar/CommandBar";
 import { ResultsGrid } from "@/components/tasks/ResultsGrid";
 import { VIDEO_CAPABILITIES } from "@/models/capabilities/video";
 import { FeatureArt } from "@/components/highfield/FeatureArt";
 import { StudioDialog, type DialogContent } from "@/components/highfield/StudioDialog";
+import { TopBar } from "@/components/highfield/TopBar";
 import "@/components/highfield/highfield.css";
 
 type MediaMode = "video" | "image";
@@ -40,7 +41,6 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
   const [mode, setMode] = useState<MediaMode>(initialMode);
   const [view, setView] = useState<StudioView>(initialView);
   const [dialog, setDialog] = useState<DialogContent | null>(null);
-  const [promoVisible, setPromoVisible] = useState(true);
   const [studioBannerVisible, setStudioBannerVisible] = useState(true);
   const [videoTab, setVideoTab] = useState<"create" | "motion">("create");
   const [modelSelection, setModelSelection] = useState<{ modelId: string; revision: number } | null>(null);
@@ -105,32 +105,7 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
   return (
     <div className={`hf-shell hf-view-${view}`}>
       <a className="hf-skip" href="#highfield-workspace">Skip to workspace</a>
-      {promoVisible && (
-        <div className="hf-promobar" role="region" aria-label="Announcement">
-          <span className="hf-promobar-copy"><Sparkles size={15} aria-hidden="true" />Self-hosted creative studio — your models, your providers, your library.</span>
-          <Link href={`${prefix}/connections`} className="hf-promobar-cta">Connect providers</Link>
-          <button className="hf-promobar-close" aria-label="Dismiss announcement" onClick={() => setPromoVisible(false)}><X size={15} /></button>
-        </div>
-      )}
-      <header className="hf-header">
-        <Link href={prefix} className="hf-brand" aria-label="Highfield home"><span className="hf-brand-mark" aria-hidden="true"><i /><i /><i /></span></Link>
-        <nav className="hf-primary-nav" aria-label="Studio navigation">
-          <button className={view === "explore" ? "is-active" : ""} onClick={() => navigate("explore")} aria-current={view === "explore" ? "page" : undefined}>Explore</button>
-          <button className={view === "create" && mode === "image" ? "is-active" : ""} onClick={() => navigate("create", "image")} aria-current={view === "create" && mode === "image" ? "page" : undefined}>Image</button>
-          <button className={view === "create" && mode === "video" ? "is-active" : ""} onClick={() => navigate("create", "video")} aria-current={view === "create" && mode === "video" ? "page" : undefined}>Video</button>
-          {audioStudioUrl ? <a href={audioStudioUrl}>Audio<ArrowUpRight size={11} className="hf-nav-external" /></a> : <button onClick={openAudio}>Audio</button>}
-          <button onClick={openApi}>MCP</button>
-          <Link href={`${prefix}/providers`}>API</Link>
-          <Link href={`${prefix}/presets`}>Effects</Link>
-          <Link href={`${prefix}/cinema`}>Cinema Studio<span className="hf-nav-new">New</span></Link>
-          <Link href={`${prefix}/skills`} className="hf-nav-secondary">Skills</Link>
-          <Link href={`${prefix}/director`} className="hf-nav-secondary">Director</Link>
-        </nav>
-        <div className="hf-header-actions">
-          <Link href={`${prefix}/providers`} className="hf-pill"><Layers3 size={14} /><span>Providers</span></Link>
-          <Link href={`${prefix}/connections`} className="hf-pill hf-pill-accent"><SlidersHorizontal size={14} /><span>Connections</span></Link>
-        </div>
-      </header>
+      <TopBar active={view === "explore" ? "explore" : mode === "image" ? "image" : "video"} audioStudioUrl={audioStudioUrl} onMcpClick={openApi} onAudioClick={openAudio} />
       <main id="highfield-workspace" className="hf-main" tabIndex={-1}>
         {view === "explore" ? (
           <div className="hf-explore">
