@@ -7,6 +7,7 @@ import { higgsfieldInput } from "@/providers/higgsfield-media";
 import { refreshConnections } from "@/lib/connections";
 import { publicErrorMessage } from "@/lib/public-error";
 import { getRequestSessionUser } from "@/lib/users";
+import { getFeatureModel } from "@/lib/model-settings";
 import type { CanonicalParams, CanonicalMediaInputs } from "@/models/canonical";
 
 export const runtime = "nodejs";
@@ -25,7 +26,7 @@ async function generateVideo(req: NextRequest, userId: string) {
   const form = await req.formData();
 
   // ── Parse canonical params from FormData ─────────────────────────────────
-  const modelId = String(form.get("model_id") ?? "").trim();
+  const modelId = String(form.get("model_id") ?? "").trim() || await getFeatureModel("video_generation") || "";
   const caps = VIDEO_CAPABILITIES[modelId];
   if (!caps) {
     return NextResponse.json({ error: `ERR_UNKNOWN_MODEL: ${modelId}` }, { status: 400 });

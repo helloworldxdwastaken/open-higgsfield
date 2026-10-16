@@ -8,6 +8,7 @@
 .admin-form input,.admin-form select{height:38px;padding:0 11px;border:1px solid #33373a;border-radius:8px;background:#131517;color:#f7f7f8;font-size:14px}
 .admin-form button{height:38px;padding:0 15px;border:0;border-radius:8px;background:#d1fe17;color:#131309;font-size:13px;font-weight:700;cursor:pointer}
 .admin-form button:disabled{opacity:.55;cursor:wait}
+.admin-feature-list{margin-top:26px;display:grid;gap:12px}
 .admin-status{color:#d1fe17;font-size:13px;margin-top:12px}
 .admin-table-wrap{margin-top:25px;border:1px solid #33373a;border-radius:10px;overflow:hidden}
 .admin-table{width:100%;border-collapse:collapse;font-size:14px}

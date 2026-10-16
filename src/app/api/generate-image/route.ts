@@ -5,6 +5,7 @@ import { saveInputLocally, uploadToTmpfiles } from "@/lib/upload";
 import { submitGeneration } from "@/lib/generation-service";
 import { publicErrorMessage } from "@/lib/public-error";
 import { getRequestSessionUser } from "@/lib/users";
+import { getFeatureModel } from "@/lib/model-settings";
 import type { CanonicalParams, CanonicalMediaInputs } from "@/models/canonical";
 
 export const runtime = "nodejs";
@@ -21,7 +22,7 @@ async function generateImage(req: NextRequest, userId: string) {
   const form = await req.formData();
 
   // ── Model lookup ──────────────────────────────────────────────────────────
-  const modelId = String(form.get("model_id") ?? "").trim();
+  const modelId = String(form.get("model_id") ?? "").trim() || await getFeatureModel("image_generation") || "";
   const caps = IMAGE_CAPABILITIES[modelId];
   if (!caps) {
     return NextResponse.json({ error: `ERR_UNKNOWN_IMAGE_MODEL: ${modelId}` }, { status: 400 });

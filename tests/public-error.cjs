@@ -34,6 +34,7 @@ Module._load = function (id, parent, ...rest) {
     if (id === "@/lib/connections") return { refreshConnections: () => {} };
     if (id === "@/lib/upload") return { saveInputLocally: async () => "/api/uploaded/fixture.png", uploadToTmpfiles: media };
     if (id === "@/lib/users") return { getRequestSessionUser: async () => ({ id: "fixture-user" }) };
+    if (id === "@/lib/model-settings") return { getFeatureModel: async () => null, getFeatureSetting: async () => null };
     return originalLoad.call(this, id, parent, ...rest);
 };
 process.env.STUDIO_PUBLIC_ORIGIN = origin;

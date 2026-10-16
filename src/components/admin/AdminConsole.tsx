@@ -12,6 +12,21 @@ type AdminUser = {
     storage_used: string | null;
 };
 
+type AdminModelFeature = {
+    feature: string;
+    label: string;
+    mode: "catalog" | "identifier" | "planning";
+    providerEngine?: string;
+    choices?: Array<{ id: string; label: string }>;
+};
+
+type AdminModelSetting = {
+    feature: string;
+    model_id: string;
+    provider_engine?: string;
+    updated_at: string;
+};
+
 export function AdminConsole() {
     const [users, setUsers] = useState<AdminUser[]>([]);
     const [email, setEmail] = useState("");
@@ -19,6 +34,9 @@ export function AdminConsole() {
     const [role, setRole] = useState<"user" | "admin">("user");
     const [status, setStatus] = useState<string | null>(null);
     const [busy, setBusy] = useState(false);
+    const [features, setFeatures] = useState<AdminModelFeature[]>([]);
+    const [modelValues, setModelValues] = useState<Record<string, string>>({});
+    const [engineValues, setEngineValues] = useState<Record<string, string>>({});
 
     const load = useCallback(async () => {
         const response = await fetch("/api/admin/users");
@@ -28,6 +46,14 @@ export function AdminConsole() {
         }
         const data = await response.json() as { users?: AdminUser[] };
         setUsers(data.users ?? []);
+        const modelResponse = await fetch("/api/admin/models");
+        if (modelResponse.ok) {
+            const modelData = await modelResponse.json() as { features?: AdminModelFeature[]; settings?: AdminModelSetting[] };
+            const settings = modelData.settings ?? [];
+            setFeatures(modelData.features ?? []);
+            setModelValues(Object.fromEntries(settings.map(setting => [setting.feature, setting.model_id])));
+            setEngineValues(Object.fromEntries(settings.filter(setting => setting.provider_engine).map(setting => [setting.feature, setting.provider_engine as string])));
+        }
     }, []);
 
     useEffect(() => { void load(); }, [load]);
@@ -49,6 +75,29 @@ export function AdminConsole() {
             setEmail(""); setPassword("");
             setStatus("User created");
             await load();
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function saveModel(feature: AdminModelFeature) {
+        setBusy(true); setStatus(null);
+        try {
+            const response = await fetch("/api/admin/models", {
+                method: "PUT",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                    feature: feature.feature,
+                    model_id: modelValues[feature.feature] ?? "",
+                    provider_engine: engineValues[feature.feature] ?? feature.providerEngine,
+                }),
+            });
+            if (!response.ok) {
+                const data = await response.json().catch(() => ({})) as { error?: string };
+                setStatus(data.error === "ERR_INVALID_MODEL_ID" ? "Choose a valid model." : data.error ?? "Model update failed");
+                return;
+            }
+            setStatus("Model updated");
         } finally {
             setBusy(false);
         }
@@ -95,6 +144,27 @@ export function AdminConsole() {
                         </tbody>
                     </table>
                     {!users.length && <p className={styles.adminEmpty}>No accounts are visible yet.</p>}
+                </div>
+            </section>
+            <section className={styles.adminCard} aria-labelledby="model-heading">
+                <header><p className={styles.adminEyebrow}>ADMIN CONSOLE</p><h1 id="model-heading">Models</h1><p className={styles.adminSub}>Set the model each workflow uses when the studio is left on Admin default.</p></header>
+                <div className={styles.adminFeatureList}>
+                    {features.map(feature => (
+                        <form className={styles.adminForm} key={feature.feature} onSubmit={event => { event.preventDefault(); void saveModel(feature); }}>
+                            <label>{feature.label}
+                                {feature.mode === "catalog" ? (
+                                    <select value={modelValues[feature.feature] ?? ""} onChange={event => setModelValues(current => ({ ...current, [feature.feature]: event.target.value }))}>
+                                        <option value="">Not set</option>
+                                        {feature.choices?.map(choice => <option key={choice.id} value={choice.id}>{choice.label}</option>)}
+                                    </select>
+                                ) : (
+                                    <input value={modelValues[feature.feature] ?? ""} maxLength={200} placeholder={feature.mode === "identifier" ? "provider/model" : "installed model"} onChange={event => setModelValues(current => ({ ...current, [feature.feature]: event.target.value }))} />
+                                )}
+                            </label>
+                            {feature.mode === "planning" && <label>Engine<select value={engineValues[feature.feature] ?? "ollama"} onChange={event => setEngineValues(current => ({ ...current, [feature.feature]: event.target.value }))}><option value="ollama">Ollama</option><option value="lm-studio">LM Studio</option></select></label>}
+                            <button type="submit" disabled={busy}>Save</button>
+                        </form>
+                    ))}
                 </div>
             </section>
         </main>

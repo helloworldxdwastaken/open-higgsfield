@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -45,6 +45,23 @@ export function VideoStudio({ reuseTask }: VideoStudioProps) {
   const [elements, setElements] = useState<ElementState[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (reuseTask?.model_id) return;
+    let active = true;
+    void (async () => {
+      const response = await fetch("/api/model-defaults");
+      if (!response.ok || !active) return;
+      const data = await response.json() as { settings?: Record<string, string | null> };
+      const adminModelId = data.settings?.video_generation;
+      if (active && adminModelId && VIDEO_CAPABILITIES[adminModelId]) {
+        setModelId(adminModelId);
+        setVariantId("");
+        setSettings(defaultSettings(VIDEO_CAPABILITIES[adminModelId]));
+      }
+    })();
+    return () => { active = false; };
+  }, [reuseTask?.model_id]);
 
   const model = VIDEO_CAPABILITIES[modelId] ?? firstModel;
   const overrides = getVideoOverrides(modelId);

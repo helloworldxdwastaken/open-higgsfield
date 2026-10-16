@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -97,6 +97,19 @@ export function ImageStudio({ reuseTask }: ImageStudioProps) {
   const [fieldValues, setFieldValues] = useState<Record<string, unknown>>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (reuseTask?.model_id) return;
+    let active = true;
+    void (async () => {
+      const response = await fetch("/api/model-defaults");
+      if (!response.ok || !active) return;
+      const data = await response.json() as { settings?: Record<string, string | null> };
+      const modelId = data.settings?.image_generation;
+      if (active && modelId && IMAGE_CAPABILITIES[modelId]) setModelId(modelId);
+    })();
+    return () => { active = false; };
+  }, [reuseTask?.model_id]);
 
   const model = IMAGE_CAPABILITIES[modelId] ?? firstModel;
 

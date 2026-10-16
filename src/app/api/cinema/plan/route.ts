@@ -3,6 +3,7 @@ import { planCinemaProject } from "@/lib/cinema-service";
 import { getCinemaProject } from "@/lib/cinema-store";
 import { publicErrorMessage } from "@/lib/public-error";
 import { getRequestSessionUser } from "@/lib/users";
+import { getFeatureSetting } from "@/lib/model-settings";
 import { cinemaBody } from "../projects/_shared";
 import type { DirectorEngine } from "@/lib/director";
 
@@ -16,6 +17,11 @@ export async function POST(request: NextRequest) {
         if (!user) return NextResponse.json({ error: "ERR_AUTHENTICATION_REQUIRED" }, { status: 401, headers });
         const body = await cinemaBody(request);
         projectId = typeof body?.projectId === "string" ? body.projectId : undefined;
+        if (body && (!body.engine || !body.model)) {
+            const setting = await getFeatureSetting("cinema_planning") ?? await getFeatureSetting("planning");
+            body.engine = setting?.provider_engine === "lm-studio" ? "lm-studio" : "ollama";
+            body.model = setting?.model_id ?? "";
+        }
         return NextResponse.json(await planCinemaProject({ ...(body as unknown as { projectId: string; version: number; engine: DirectorEngine; model: string; shotCount: number }), userId: user.id }), { headers });
     } catch (error) {
         const code = publicErrorMessage(error, "ERR_CINEMA_VALIDATION");
