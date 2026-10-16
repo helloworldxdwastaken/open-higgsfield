@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { USER_STORAGE_LIMIT_BYTES } from "@/lib/storage-paths";
 import styles from "./admin.module.css";
 
 type AdminUser = {
@@ -9,7 +10,7 @@ type AdminUser = {
     role: "admin" | "user";
     active: boolean;
     created_at: string;
-    storage_used: string | null;
+    storage_used: number;
 };
 
 type AdminModelFeature = {
@@ -26,6 +27,13 @@ type AdminModelSetting = {
     provider_engine?: string;
     updated_at: string;
 };
+
+function formatBytes(bytes: number): string {
+    if (bytes >= 1024 ** 3) return `${(bytes / 1024 ** 3).toFixed(1)} GB`;
+    if (bytes >= 1024 ** 2) return `${(bytes / 1024 ** 2).toFixed(1)} MB`;
+    if (bytes >= 1024) return `${Math.round(bytes / 1024)} KB`;
+    return `${bytes} B`;
+}
 
 export function AdminConsole() {
     const [users, setUsers] = useState<AdminUser[]>([]);
@@ -136,7 +144,7 @@ export function AdminConsole() {
                             {users.map(user => (
                                 <tr key={user.id}>
                                     <td>{user.email}</td><td>{user.role}</td><td><span className={user.active ? styles.adminActive : styles.adminInactive}>{user.active ? "Active" : "Inactive"}</span></td>
-                                    <td>{user.storage_used ? `${Math.round(Number(user.storage_used) / 1024)} KB` : "0 KB"}</td>
+                                    <td>{formatBytes(user.storage_used || 0)} / {formatBytes(USER_STORAGE_LIMIT_BYTES)}</td>
                                     <td>{new Date(user.created_at).toLocaleDateString()}</td>
                                     <td><button type="button" disabled={busy} onClick={() => void toggleUser(user)}>{user.active ? "Deactivate" : "Activate"}</button></td>
                                 </tr>
