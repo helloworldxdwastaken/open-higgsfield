@@ -191,7 +191,10 @@
       "current_evidence": [
         "src/components/tasks/ResultsGrid.tsx",
         "src/app/api/download/",
-        "src/lib/upload.ts"
+        "src/lib/upload.ts",
+        "src/lib/cinema-store.ts",
+        "src/app/api/cinema/projects/",
+        "tests/cinema-store.cjs"
       ],
       "deliverables": [
         "Projects/folders, uploads, thumbnails, favorites, references and search",
@@ -209,14 +212,16 @@
       "key": "prompts",
       "title": "Prompt library and prompt engineering",
       "in_scope": true,
-      "state": "planned",
+      "state": "partial",
       "phase": 2,
       "depends_on": [
         "HF-003",
         "HF-007"
       ],
       "current_evidence": [
-        "Licensed prompt/procedure source in third_party/higgsfield-skills; no in-app prompt library yet"
+        "Eight published MIT prompt contracts adapted in src/lib/licensed-prompts.ts; six original recipes plus custom/favorite/export library in src/lib/skill-store.ts",
+        "Eight source skills and86 Markdown documents are readable/exportable with licenses; private hosted enhancers remain unavailable",
+        "src/lib/cinema-presets.ts (six original, editable storyboard starters; not an executable skill runtime)"
       ],
       "deliverables": [
         "Editable templates with variables, tags, languages and model compatibility",
@@ -234,7 +239,7 @@
       "key": "skills",
       "title": "Skills, recipes and workflow runtime",
       "in_scope": true,
-      "state": "source_only",
+      "state": "partial",
       "phase": 2,
       "depends_on": [
         "HF-006",
@@ -242,7 +247,9 @@
       ],
       "current_evidence": [
         "third_party/higgsfield-skills",
-        "docs/upstream-sources.json; imported source remains unadapted"
+        "docs/upstream-sources.json; original CLI execution and scripts remain unadapted",
+        "src/app/[locale]/skills/ and src/lib/licensed-prompts.ts; prompt preparation, remixes, attribution, source reading and exports",
+        "src/content/licensed-skill-reference.json; inert public licensed source, not private runtime state"
       ],
       "deliverables": [
         "Pinned licensed upstream skill sources and independently authored Highfield workflows",
@@ -338,7 +345,7 @@
       "key": "cinema",
       "title": "Cinema Studio and cinematic projects",
       "in_scope": true,
-      "state": "api_only",
+      "state": "partial",
       "phase": 2,
       "depends_on": [
         "HF-006",
@@ -350,7 +357,13 @@
         "HF-027"
       ],
       "current_evidence": [
-        "src/models/capabilities/highfield.ts contains optional native Cinema API adapter"
+        "src/models/capabilities/highfield.ts contains optional native Cinema API adapter",
+        "src/components/cinema/",
+        "src/lib/cinema-store.ts",
+        "src/lib/cinema-service.ts",
+        "src/app/api/cinema/",
+        "tests/cinema-service.cjs",
+        "Native Cinema remains optional; narration, assembled timeline/export, workspace isolation and regional editing remain unimplemented"
       ],
       "deliverables": [
         "Our project/scene/shot model, editable storyboard and multi-shot continuity",
@@ -711,7 +724,8 @@
       ],
       "current_evidence": [
         "src/lib/director.ts",
-        "src/app/[locale]/director/page.tsx"
+        "src/app/[locale]/director/page.tsx",
+        "src/lib/cinema-service.ts adds structured, persisted shot planning and explicit per-shot generation"
       ],
       "deliverables": [
         "Persisted conversations, structured/editable plans and project context",
@@ -742,7 +756,7 @@
         "HF-029"
       ],
       "current_evidence": [
-        "src/app/api/mcp/route.ts currently exposes four read-only tools"
+        "src/app/api/mcp/route.ts exposes six read-only tools including saved Cinema projects; generation is still REST only"
       ],
       "deliverables": [
         "Authenticated tools/resources/prompts backed by the same app services",

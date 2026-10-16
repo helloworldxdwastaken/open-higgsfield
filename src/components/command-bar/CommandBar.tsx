@@ -22,6 +22,7 @@ import type { AttachmentItem } from "@/components/studio/AttachmentZone";
 import type { SizeUiResolution } from "@/types";
 import { buildGroupedDropTargets, slotsToDropDescriptors, type GroupedDropTarget } from "@/lib/attachment-drop-targets";
 import { remapSlotFilesOnModelSwitch, remapVideoAttachmentsOnModelSwitch } from "@/lib/attachment-remap";
+import { parseRecipeDraft } from "@/lib/recipe-draft";
 
 import { VideoModelPill } from "@/components/command-bar/VideoModelPill";
 import { ImageModelPill } from "@/components/command-bar/ImageModelPill";
@@ -34,7 +35,7 @@ import { VideoControlsPill } from "@/components/command-bar/VideoControlsPill";
 import { AttachmentButton } from "@/components/command-bar/AttachmentButton";
 import { ImageAttachmentButton } from "@/components/command-bar/ImageAttachmentButton";
 
-const schema = z.object({ prompt: z.string().max(2000) });
+const schema = z.object({ prompt: z.string().max(2000), recipeImages: z.number().int().min(0).max(3) });
 type FormData = z.infer<typeof schema>;
 
 interface CommandBarProps {
@@ -84,9 +85,10 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
 
     const { control, setValue, handleSubmit } = useForm<FormData>({
         resolver: zodResolver(schema),
-        defaultValues: { prompt: "" },
+        defaultValues: { prompt: "", recipeImages: 0 },
     });
     const prompt = useWatch({ control, name: "prompt" }) ?? "";
+    const requiredRecipeImages = useWatch({ control, name: "recipeImages" }) ?? 0;
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const dragDepthRef = useRef(0);
 
@@ -95,9 +97,10 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
         if (url.searchParams.get("recipeDraft") !== "1") return;
         try {
             const stored = sessionStorage.getItem("highfield:recipe-draft");
-            const draft = stored ? JSON.parse(stored) : null;
-            if (draft && draft.mediaType === mode && typeof draft.prompt === "string" && draft.prompt.length <= 2000) {
+            const draft = stored ? parseRecipeDraft(JSON.parse(stored)) : undefined;
+            if (draft && draft.mediaType === mode) {
                 setValue("prompt", draft.prompt, { shouldDirty: true });
+                setValue("recipeImages", draft.requiredImages);
                 sessionStorage.removeItem("highfield:recipe-draft");
                 url.searchParams.delete("recipeDraft");
                 window.history.replaceState(null, "", url);
@@ -464,6 +467,7 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
     }, [handleVideoModelChange, handleImageModelChange, onModeChange]);
 
     const onSubmit = async (data: FormData) => {
+        if (missingRecipeImages > 0) return;
         setApiError(null);
         if (mode === "video") {
             const body = new FormData();
@@ -505,6 +509,9 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
                 .catch(() => setApiError("ERR_GENERIC"));
         }
     };
+
+    const attachedRecipeImages = mode === "image" ? Object.values(slotFiles).flat().filter(file => file.type.startsWith("image/")).length : attachments.filter(item => item.kind === "image" && (item.file || item.url)).length;
+    const missingRecipeImages = Math.max(0, requiredRecipeImages - attachedRecipeImages);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
@@ -751,6 +758,7 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
                             </div>
                         </div>
 
+                        {requiredRecipeImages > 0 && <p role="status" className="mb-2 text-xs leading-5 text-[#dce8bc]">{missingRecipeImages > 0 ? `This recipe needs ${requiredRecipeImages} image reference(s). Attach ${missingRecipeImages} more and choose a reference-compatible model before generating.` : "Recipe image references attached. Review the selected model and prompt before generating."}</p>}
                         {/* Control row (pills) */}
                         <div className="flex flex-wrap items-center gap-2 mt-[2px]">
                             {mode === "video" ? (
@@ -839,7 +847,9 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
 
                     {/* Generate button — flex end, large lime */}
                     <button
-                        type="submit"
+                         type="submit"
+                         disabled={missingRecipeImages > 0}
+                         title={missingRecipeImages > 0 ? "Attach the recipe’s required image references first" : undefined}
                         className="shrink-0 self-center border-none rounded-[22px] font-bold cursor-pointer active:scale-95 transition-transform"
                         style={{
                             width: 146,

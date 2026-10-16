@@ -4,6 +4,7 @@ import { VIDEO_CAPABILITIES } from "@/models/capabilities/video";
 import { connectionStatus } from "@/lib/connections";
 import { getImageTasks, getVideoTasks, getTask, initStore } from "@/lib/task-store";
 import { toPublicTask } from "@/lib/public-tasks";
+import { getCinemaProject, listCinemaProjects } from "@/lib/cinema-store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,6 +15,8 @@ const tools = [
     { name: "highfield_connections", description: "List configured connection flags. Credential values are never returned.", inputSchema: { type: "object", properties: {}, additionalProperties: false }, annotations },
     { name: "highfield_jobs", description: "Read the latest 50 image and video jobs from this owner workspace.", inputSchema: { type: "object", properties: {}, additionalProperties: false }, annotations },
     { name: "highfield_job", description: "Read one job status and authenticated local download references.", inputSchema: { type: "object", properties: { task_id: { type: "string", maxLength: 128 } }, required: ["task_id"], additionalProperties: false }, annotations },
+    { name: "highfield_cinema_projects", description: "List saved Cinema storyboard projects in this owner workspace. Does not create, plan or generate media.", inputSchema: { type: "object", properties: {}, additionalProperties: false }, annotations },
+    { name: "highfield_cinema_project", description: "Read one saved Cinema storyboard, its shot prompts and generation associations. Does not submit a generation.", inputSchema: { type: "object", properties: { project_id: { type: "string", maxLength: 36 } }, required: ["project_id"], additionalProperties: false }, annotations },
 ];
 
 function summarize(task: ReturnType<typeof getTask>) {
@@ -55,6 +58,10 @@ export async function POST(request: NextRequest) {
             case "highfield_job":
                 if (typeof args.task_id !== "string" || args.task_id.length > 128) throw new Error("Invalid task_id");
                 await initStore(); result = summarize(getTask(args.task_id)); break;
+            case "highfield_cinema_projects": result = await listCinemaProjects(); break;
+            case "highfield_cinema_project":
+                if (typeof args.project_id !== "string") throw new Error("Invalid project_id");
+                result = await getCinemaProject(args.project_id) || null; break;
             default: throw new Error("Unknown tool");
         }
         return reply({ content: [{ type: "text", text: JSON.stringify(result) }] });

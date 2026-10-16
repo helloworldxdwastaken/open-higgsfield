@@ -1,8 +1,9 @@
 {
   "schema_version": 1,
   "checked_on": "2026-10-16",
-  "source_only": true,
-  "runtime_changed": false,
+  "source_only": false,
+  "runtime_changed": true,
+  "runtime_scope": "Inert licensed Markdown reader/export and eight public prompt adaptations; no imported installers, scripts or original CLI skills executed.",
   "sources": [
     {
       "name": "higgsfield-skills",
@@ -57,7 +58,9 @@
         "Named proprietary models and account credits",
         "Some scripts use Python render/export libraries or Blender; dependencies not installed"
       ],
-      "compatibility": "upstream-unadapted",
+      "compatibility": "published-prompt-contracts-partially-adapted",
+      "compiled_markdown_documents": 86,
+      "adapted_prompt_contracts": 8,
       "non_autoload": true,
       "installed_in_agent_skill_directories": false,
       "scripts_executed": false,

@@ -18,7 +18,7 @@ const recipe = { name: 'My fixture recipe', description: 'Owner-authored prompt'
 const request = (body, origin = 'https://studio.example', extra = {}) => new (require('next/server').NextRequest)('https://studio.example/api/skills', { method: 'POST', headers: { 'content-type': 'application/json', ...(origin ? { origin } : {}), ...extra }, body: typeof body === 'string' ? body : JSON.stringify(body) });
 (async () => {
     if (process.env.SKILLS_FIXTURE_CHILD) { assert.equal((await store.readSkillLibrary()).recipes[0].name, recipe.name); console.log('restart-ok'); return; }
-    assert.equal(catalog.BUILTIN_RECIPES.length, 6);
+    assert.equal(catalog.BUILTIN_RECIPES.length, 14);
     assert.equal(catalog.SKILL_SOURCES.length, 8);
     assert(catalog.SKILL_SOURCES.every(item => item.execution === 'external-reference' && item.license === 'MIT'));
     for (const item of catalog.BUILTIN_RECIPES) {
@@ -64,5 +64,5 @@ const request = (body, origin = 'https://studio.example', extra = {}) => new (re
     library = await store.readSkillLibrary(); assert.equal(library.recipes.length, 0); assert(!library.favorites.includes(id));
     fs.writeFileSync(file, '{broken');
     assert.equal((await api.GET()).status, 503); assert.equal(fs.readFileSync(file, 'utf8'), '{broken');
-    console.log(JSON.stringify({ recipes: 6, licensedReferences: 8, strictTemplates: true, atomicPrivatePersistence: true, optimisticConcurrency: true, restartRead: true, boundedRequestsAndCSRF: true, corruptStorePreserved: true, paidCalls: 0 }));
+    console.log(JSON.stringify({ recipes: 14, licensedReferences: 8, strictTemplates: true, atomicPrivatePersistence: true, optimisticConcurrency: true, restartRead: true, boundedRequestsAndCSRF: true, corruptStorePreserved: true, paidCalls: 0 }));
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => { if (!process.env.SKILLS_FIXTURE_CHILD) fs.rmSync(directory, { recursive: true, force: true }); });

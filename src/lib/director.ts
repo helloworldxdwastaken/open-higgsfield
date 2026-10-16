@@ -2,20 +2,21 @@ import { localEngineHeaders, localEngineUrl } from "@/lib/provider-endpoints";
 
 export type DirectorEngine = "ollama" | "lm-studio";
 
-export async function createShotPlan(engine: DirectorEngine, model: string, brief: string) {
+export async function createShotPlan(engine: DirectorEngine, model: string, brief: string, options?: { system: string; maxTokens?: number }) {
     if (!["ollama", "lm-studio"].includes(engine) || !model || model.length > 200 || !brief.trim() || brief.length > 12000) {
         throw new Error("ERR_INVALID_DIRECTOR_REQUEST");
     }
     const connection = engine === "ollama" ? "OLLAMA_URL" : "LM_STUDIO_URL";
-    const system = "You are a film director planning an AI production. Return a concise, practical shot plan with numbered shots, duration, framing, camera movement, image prompt, video prompt, sound and continuity notes. Adapt to the user's brief. You only plan; never claim to have generated images, video or audio. Do not invent model capabilities or costs.";
+    const system = options?.system || "You are a film director planning an AI production. Return a concise, practical shot plan with numbered shots, duration, framing, camera movement, image prompt, video prompt, sound and continuity notes. Adapt to the user's brief. You only plan; never claim to have generated images, video or audio. Do not invent model capabilities or costs.";
+    const maxTokens = Math.min(4096, Math.max(256, options?.maxTokens || 1800));
     const messages = [{ role: "system", content: system }, { role: "user", content: brief.trim() }];
     const headers = { ...localEngineHeaders(connection), "Content-Type": "application/json" };
     const endpoint = engine === "ollama" ? "/api/chat" : "/v1/chat/completions";
     const response = await fetch(localEngineUrl(connection, endpoint), {
         method: "POST", headers, redirect: "error", signal: AbortSignal.timeout(180000),
         body: JSON.stringify(engine === "ollama"
-            ? { model, messages, stream: false, keep_alive: "2m", options: { num_predict: 1800, temperature: 0.6 } }
-            : { model, messages, stream: false, max_tokens: 1800, temperature: 0.6 }),
+            ? { model, messages, stream: false, keep_alive: "2m", options: { num_predict: maxTokens, temperature: 0.6 } }
+            : { model, messages, stream: false, max_tokens: maxTokens, temperature: 0.6 }),
     });
     if (!response.ok) throw new Error(`ERR_DIRECTOR_PROVIDER: ${response.status}`);
     const length = Number(response.headers.get("content-length") || "0");

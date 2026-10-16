@@ -22,13 +22,13 @@ Three official MIT-licensed repositories are pinned under `third_party/`. Their 
 
 | Source | Available material | Current integration state |
 | --- | --- | --- |
-| [Higgsfield skills](https://github.com/higgsfield-ai/skills) | Eight public skills and supporting prompt/procedure/script files covering generation, identities, photoshoots, brand kits, marketplace cards, websites, explainers and thumbnails. | Source imported; adaptation to Highfield services and engines is pending. |
+| [Higgsfield skills](https://github.com/higgsfield-ai/skills) | Eight public skills and supporting prompt/procedure/script files covering generation, identities, photoshoots, brand kits, marketplace cards, websites, explainers and thumbnails. | Eight skill texts and 86 Markdown documents readable/exportable in-app; eight published prompt contracts adapted. General autonomous execution, original scripts and private hosted enhancers are not ported. |
 | [Higgsfield CLI](https://github.com/higgsfield-ai/cli) | Installer, documentation and notices. The released binary implementation is absent from this repository. | Reference source only; no binary installed or installer executed. |
 | [Cursor plugin](https://github.com/higgsfield-ai/cursor-plugin) | Plugin/client configuration and a routing command for the hosted Higgsfield MCP. | Source imported; this is not the hosted MCP server implementation. |
 
 To fetch these optional source references after cloning: `git submodule update --init --recursive`. They are excluded from application lint/typechecking and are not automatically loaded, registered as agent skills, or executed by the studio. Ported Highfield skills will need explicit input/output schemas, tool adapters, compatible engines, authorization and run verification.
 
-The [MCP feature inventory](highfield-mcp-inventory.json) maps all 119 Higgsfield connector operations exposed during this audit to the build modules. It covers projects/folders/assets, models, generation/estimates, presets, audio, marketing, Canvas, 3D, analysis, websites and workspaces. It is a reference inventory, not a claim that Highfield implements those tools. Our current endpoint still exposes four read-only tools. Web, API, MCP, CLI and plugin availability must be verified separately.
+The [MCP feature inventory](highfield-mcp-inventory.json) maps all 119 Higgsfield connector operations exposed during this audit to the build modules. It covers projects/folders/assets, models, generation/estimates, presets, audio, marketing, Canvas, 3D, analysis, websites and workspaces. It is a reference inventory, not a claim that Highfield implements those tools. Our endpoint exposes six read-only tools, including saved Cinema project list/detail. Web, API, MCP, CLI and plugin availability must be verified separately.
 
 ## Accounts and shared platform foundations
 
@@ -66,7 +66,7 @@ Voicebox is a separate audio studio. Set `HIGHFIELD_AUDIO_URL` to its authentica
 
 ## MCP client connection
 
-`POST /api/mcp` implements a stateless JSON-response MCP interface (protocol `2025-06-18`). Supported methods: `initialize`, `ping`, `tools/list`, `tools/call`; notifications receive 202. The four read-only tools are `highfield_models`, `highfield_connections`, `highfield_jobs`, and `highfield_job`. There is no media-generation MCP tool or event stream.
+`POST /api/mcp` implements a stateless JSON-response MCP interface (protocol `2025-06-18`). Supported methods: `initialize`, `ping`, `tools/list`, `tools/call`; notifications receive 202. The six read-only tools are `highfield_models`, `highfield_connections`, `highfield_jobs`, `highfield_job`, `highfield_cinema_projects` and `highfield_cinema_project`. There is no media-generation MCP tool or event stream.
 
 Use a client that supports authenticated Streamable HTTP with JSON responses and your deployment's owner authentication. The endpoint shares the studio's owner workspace. Keep the reverse proxy authentication in front of every route, including MCP and media downloads. Credential values and provider authorization headers are never tool results.
 

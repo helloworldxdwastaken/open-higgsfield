@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useLocale } from "next-intl";
+import { useRouter } from "next/navigation";
 import { ArrowDownToLine, ArrowUpRight, AudioLines, ChevronRight, Code2, Compass, Film, Grid2X2, Image as ImageIcon, Layers3, Library, SlidersHorizontal, Sparkles, Video } from "lucide-react";
 import { CommandBar } from "@/components/command-bar/CommandBar";
 import { ResultsGrid } from "@/components/tasks/ResultsGrid";
@@ -35,7 +36,8 @@ const workflows: Workflow[] = [
 ];
 
 export function StudioShell({ initialMode = "image", initialView = "explore", audioStudioUrl }: { initialMode?: MediaMode; initialView?: StudioView; audioStudioUrl?: string }) {
-  const locale = useLocale();
+   const locale = useLocale();
+   const router = useRouter();
   const [mode, setMode] = useState<MediaMode>(initialMode);
   const [view, setView] = useState<StudioView>(initialView);
   const [dialog, setDialog] = useState<DialogContent | null>(null);
@@ -61,7 +63,8 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
     window.history.replaceState(null, "", url);
   }
 
-  function openWorkflow(workflow: Workflow) {
+   function openWorkflow(workflow: Workflow) {
+     if (workflow.id === "cinema") { router.push(`${prefix}/cinema`); return; }
     const modelAvailable = workflow.modelId && Boolean(VIDEO_CAPABILITIES[workflow.modelId]);
     setDialog({
       title: workflow.title,
@@ -101,6 +104,7 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
           {audioStudioUrl ? <a href={audioStudioUrl}><AudioLines size={15} />Audio<ArrowUpRight size={11} className="hf-nav-external" /></a> : <button onClick={openAudio}><AudioLines size={15} />Audio</button>}
           <button className={view === "library" ? "is-active" : ""} onClick={() => navigate("library")} aria-current={view === "library" ? "page" : undefined}><Library size={15} />Library</button>
            <Link href={`${prefix}/director`}><Sparkles size={15} />Director</Link>
+           <Link href={`${prefix}/cinema`}><Film size={15} />Cinema</Link>
            <Link href={`${prefix}/skills`}><Layers3 size={15} />Skills</Link>
           <button onClick={openApi}><Code2 size={15} />MCP / API</button>
         </nav>

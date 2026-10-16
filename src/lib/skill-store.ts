@@ -7,7 +7,7 @@ import { BUILTIN_RECIPES, recipeInput, validateRecipe, type SkillRecipe } from "
 
 const revision = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER - 1);
 const storedRecipe = recipeInput.extend({ id: z.string().uuid(), version: revision, origin: z.literal("custom") }).strict();
-const librarySchema = z.object({ schemaVersion: z.literal(1), revision, recipes: z.array(storedRecipe).max(200), favorites: z.array(z.string().max(80)).max(206) }).strict();
+const librarySchema = z.object({ schemaVersion: z.literal(1), revision, recipes: z.array(storedRecipe).max(200), favorites: z.array(z.string().max(80)).max(200 + BUILTIN_RECIPES.length) }).strict();
 export type SkillLibrary = { schemaVersion: 1; revision: number; recipes: SkillRecipe[]; favorites: string[] };
 const mutation = z.discriminatedUnion("action", [
     z.object({ action: z.literal("save"), revision, id: z.string().uuid().optional(), recipe: recipeInput }).strict(),
@@ -43,7 +43,9 @@ async function read(target: ReturnType<typeof location>): Promise<SkillLibrary> 
             const parsed = librarySchema.parse(JSON.parse(await handle.readFile("utf8")));
             const ids = new Set(BUILTIN_RECIPES.map(item => item.id));
             for (const item of parsed.recipes) {
-                validateRecipe({ name: item.name, description: item.description, mediaType: item.mediaType, template: item.template });
+                const { id: _id, version: _version, origin: _origin, ...definition } = item;
+                void _id; void _version; void _origin;
+                validateRecipe(definition);
                 if (ids.has(item.id)) throw new Error("ERR_SKILLS_STORAGE");
                 ids.add(item.id);
             }

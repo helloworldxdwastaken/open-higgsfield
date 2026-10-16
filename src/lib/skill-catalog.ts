@@ -1,13 +1,16 @@
 import { z } from "zod";
+import { LICENSED_PROMPTS, UPSTREAM_PROMPT_IDS } from "@/lib/licensed-prompts";
 
 export const recipeInput = z.object({
     name: z.string().trim().min(1).max(80),
     description: z.string().trim().max(240),
     mediaType: z.enum(["image", "video"]),
     template: z.string().trim().min(10).max(1600),
+    upstreamId: z.enum(UPSTREAM_PROMPT_IDS).optional(),
+    requiredImages: z.number().int().min(0).max(3).optional(),
 }).strict();
 export type RecipeInput = z.infer<typeof recipeInput>;
-export type SkillRecipe = RecipeInput & { id: string; version: number; origin: "highfield" | "custom" };
+export type SkillRecipe = RecipeInput & { id: string; version: number; origin: "highfield" | "upstream" | "custom" };
 
 export const BUILTIN_RECIPES: SkillRecipe[] = [
     { id: "product-editorial", version: 1, origin: "highfield", name: "Product editorial", description: "A considered product portrait. Shape, material and light first.", mediaType: "image", template: "Create an editorial product photograph of {{subject}}. Setting: {{setting}}. Art direction: {{style}}. Give the product a clear silhouette, believable materials and controlled reflections. Use one motivated key light, grounded shadows and restrained styling. Keep the composition uncluttered. Do not invent logos, packaging claims or product features. If a product reference is attached, preserve its actual proportions, markings and design." },
@@ -16,6 +19,7 @@ export const BUILTIN_RECIPES: SkillRecipe[] = [
     { id: "character-reference", version: 1, origin: "highfield", name: "Character reference", description: "Establish a fictional persona for later reference-based shots.", mediaType: "image", template: "Create a clear reference portrait of a fictional adult character: {{subject}}. Wardrobe and environment: {{setting}}. Visual treatment: {{style}}. Use readable facial features, consistent anatomy, neutral framing and unobstructed details that can serve as references for later images. No text labels or collage. This is a reference image, not identity training; later consistency depends on the selected model and attached references." },
     { id: "cinematic-reveal", version: 1, origin: "highfield", name: "Cinematic reveal", description: "A single deliberate shot with a beginning and a reveal.", mediaType: "video", template: "Single continuous cinematic shot of {{subject}}. Environment and action: {{setting}}. Lighting and visual direction: {{style}}. Begin with an intriguing detail, move the camera slowly to reveal the subject, then hold a stable final composition. Keep object identity, lighting direction and spatial relationships consistent. Avoid abrupt cuts, changing text and unnecessary camera shake. Use the duration, aspect ratio and reference inputs explicitly selected in the studio; camera motion is a prompt instruction, not a guaranteed physical control." },
     { id: "environment-frame", version: 1, origin: "highfield", name: "World / establishing frame", description: "Give the scene a place, a scale and an atmosphere.", mediaType: "image", template: "Create an establishing frame of {{subject}}. Location, time and story context: {{setting}}. Art direction: {{style}}. Show a coherent sense of scale, a readable foreground/midground/background and one strong compositional anchor. Use plausible atmospheric depth and a motivated lighting source. Avoid unrelated landmarks, arbitrary text and visual clutter. This image will be used as a scene reference for a later shot." },
+    ...LICENSED_PROMPTS.map(item => ({ id: item.id, name: item.name, description: item.description, mediaType: item.mediaType, template: item.template, requiredImages: item.requiredImages, upstreamId: item.id, version: 1, origin: "upstream" as const })),
 ];
 
 const SOURCE_COMMIT = "f83af0bc1d937c8119099a11f8ebbf5e6fb99819";
@@ -43,7 +47,7 @@ export function recipeFields(template: string): string[] {
 }
 export function validateRecipe(input: unknown): RecipeInput {
     const parsed = recipeInput.safeParse(input);
-    if (!parsed.success || Object.values(parsed.data).some(value => value.includes("\0"))) throw new Error("ERR_SKILLS_VALIDATION");
+    if (!parsed.success || Object.values(parsed.data).some(value => typeof value === "string" && value.includes("\0"))) throw new Error("ERR_SKILLS_VALIDATION");
     recipeFields(parsed.data.template);
     return parsed.data;
 }

@@ -34,10 +34,13 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run lint && npm run typecheck && npm run build",
     "test:director": "node tests/director.cjs",
-    "test:contracts": "node tests/director.cjs && node tests/task-store.cjs && node tests/providers.cjs && node tests/public-tasks.cjs && node tests/public-error.cjs",
+    "test:contracts": "node tests/director.cjs && node tests/task-store.cjs && node tests/providers.cjs && node tests/public-tasks.cjs && node tests/public-error.cjs && node tests/cinema-store.cjs && node tests/cinema-service.cjs && node tests/skills.cjs && node tests/skill-reference.cjs",
     "privacy:check": "node scripts/check-public-source.mjs",
     "privacy:history": "node scripts/check-public-source.mjs --history",
-    "test:privacy": "node tests/public-tasks.cjs && node tests/public-error.cjs && node tests/source-privacy.mjs"
+    "test:privacy": "node tests/public-tasks.cjs && node tests/public-error.cjs && node tests/source-privacy.mjs",
+    "test:cinema": "node tests/cinema-store.cjs && node tests/cinema-service.cjs",
+    "test:skills": "node tests/skills.cjs && node tests/skill-reference.cjs",
+    "sources:skills": "node scripts/build-skill-reference.mjs"
   },
   "dependencies": {
     "@ai-sdk/gateway": "^4.0.71",
