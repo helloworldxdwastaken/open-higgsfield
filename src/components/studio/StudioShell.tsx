@@ -43,6 +43,7 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
   const [dialog, setDialog] = useState<DialogContent | null>(null);
   const [promoVisible, setPromoVisible] = useState(true);
   const [studioBannerVisible, setStudioBannerVisible] = useState(true);
+  const [videoTab, setVideoTab] = useState<"create" | "motion">("create");
   const [modelSelection, setModelSelection] = useState<{ modelId: string; revision: number } | null>(null);
   const imageCount = Object.keys(IMAGE_CAPABILITIES).length;
   const videoCount = Object.keys(VIDEO_CAPABILITIES).length;
@@ -63,6 +64,16 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
     if (nextView === "library") url.searchParams.set("view", "library");
     else url.searchParams.delete("view");
     window.history.replaceState(null, "", url);
+  }
+
+  function selectVideoTab(next: "create" | "motion") {
+    setVideoTab(next);
+    const modelId = next === "motion" ? "higgsfield__genjutsu-motion-transfer" : Object.keys(VIDEO_CAPABILITIES)[0];
+    if (modelId && VIDEO_CAPABILITIES[modelId]) window.dispatchEvent(new CustomEvent("highfield:select-model", { detail: { mediaType: "video", modelId } }));
+  }
+
+  function openHowItWorks() {
+    setDialog({ title: "Video workflow", eyebrow: "HOW IT WORKS", status: "Guided overview", description: "Add references, choose a preset, describe the motion and generate. Preset and model availability follows your connected providers; unavailable workflows are labelled rather than simulated.", actionLabel: "Open connections", actionHref: `${prefix}/connections` });
   }
 
    function openWorkflow(workflow: Workflow) {
@@ -134,25 +145,55 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
             <footer className="hf-footer"><span>Highfield · Open-source creative studio</span><a href="https://github.com/helloworldxdwastaken/open-higgsfield" target="_blank" rel="noopener noreferrer">Fork of Open-Higgsfield<ArrowUpRight size={12} /></a></footer>
           </div>
         ) : (
-          <div className="hf-studio-workspace">
-            {view === "create" && studioBannerVisible && (
+          <div className={`hf-studio-workspace ${view === "create" && mode === "video" ? "hf-video-mode" : ""}`}>
+            {view === "library" ? (
+              <>
+                <div className="hf-workspace-heading"><div><span className="hf-eyebrow">YOUR CREATIVE ARCHIVE</span><h1>Your library</h1></div><div className="hf-workspace-controls"><div className="hf-library-tabs" aria-label="Library media type"><button className={mode === "image" ? "is-active" : ""} onClick={() => navigate("library", "image")} aria-pressed={mode === "image"}><ImageIcon size={14} />Images</button><button className={mode === "video" ? "is-active" : ""} onClick={() => navigate("library", "video")} aria-pressed={mode === "video"}><Video size={14} />Videos</button></div></div></div>
+                <div className="hf-results-region"><ResultsGrid mode={mode} /></div>
+                <div className="hf-library-footer"><ArrowDownToLine size={14} /><span>Completed generations can be previewed and downloaded from their cards.</span><button onClick={() => navigate("create")}>Create {mode}<ArrowUpRight size={14} /></button></div>
+              </>
+            ) : mode === "video" ? (
+              <div className="hf-video-layout">
+                <aside className="hf-video-panel" aria-label="Video composer">
+                  <div className="hf-video-tabs" role="tablist" aria-label="Video workspace modes">
+                    <button role="tab" aria-selected={videoTab === "create"} className={videoTab === "create" ? "is-active" : ""} onClick={() => selectVideoTab("create")}>Create Video</button>
+                    <button role="tab" aria-selected={false} disabled title="Edit Video is not implemented yet">Edit Video</button>
+                    <button role="tab" aria-selected={videoTab === "motion"} className={videoTab === "motion" ? "is-active" : ""} onClick={() => selectVideoTab("motion")}>Motion Control</button>
+                  </div>
+                  <CommandBar mode="video" onModeChange={nextMode => navigate("create", nextMode)} variant="panel" />
+                </aside>
+                <div className="hf-video-main">
+                  {studioBannerVisible && (
               <div className="hf-studio-banner" role="region" aria-label="Feature announcement">
                 <div className="hf-studio-banner-copy"><span>Bring your stories to life</span><span>Create cinematic shots from prompts</span></div>
                 <button className="hf-studio-banner-cta" onClick={() => { router.push(`${prefix}/cinema`); }}>Open Cinema Studio</button>
                 <button className="hf-studio-banner-close" aria-label="Dismiss banner" onClick={() => setStudioBannerVisible(false)}><X size={14} /></button>
               </div>
             )}
-            {view === "library" ? (
-              <div className="hf-workspace-heading"><div><span className="hf-eyebrow">YOUR CREATIVE ARCHIVE</span><h1>Your library</h1></div><div className="hf-workspace-controls"><div className="hf-library-tabs" aria-label="Library media type"><button className={mode === "image" ? "is-active" : ""} onClick={() => navigate("library", "image")} aria-pressed={mode === "image"}><ImageIcon size={14} />Images</button><button className={mode === "video" ? "is-active" : ""} onClick={() => navigate("library", "video")} aria-pressed={mode === "video"}><Video size={14} />Videos</button></div></div></div>
+                  <div className="hf-video-main-top">
+                    <button className="hf-subtle-button" onClick={() => document.getElementById("highfield-results")?.scrollIntoView({ behavior: "smooth" })}>History</button>
+                    <button className="hf-subtle-button" onClick={openHowItWorks}>How it works</button>
+                  </div>
+                  <div id="highfield-results" className="hf-results-region"><ResultsGrid mode="video" /></div>
+                </div>
+              </div>
             ) : (
-              <div className="hf-workspace-heading hf-workspace-heading-compact"><div className="hf-workspace-controls"><button className="hf-subtle-button" onClick={() => navigate("library")}><Grid2X2 size={14} />View library<ChevronRight size={13} /></button></div></div>
+              <>
+                {studioBannerVisible && (
+              <div className="hf-studio-banner" role="region" aria-label="Feature announcement">
+                <div className="hf-studio-banner-copy"><span>Bring your stories to life</span><span>Create cinematic shots from prompts</span></div>
+                <button className="hf-studio-banner-cta" onClick={() => { router.push(`${prefix}/cinema`); }}>Open Cinema Studio</button>
+                <button className="hf-studio-banner-close" aria-label="Dismiss banner" onClick={() => setStudioBannerVisible(false)}><X size={14} /></button>
+              </div>
             )}
-            <div className="hf-results-region"><ResultsGrid mode={mode} /></div>
-            {view === "library" && <div className="hf-library-footer"><ArrowDownToLine size={14} /><span>Completed generations can be previewed and downloaded from their cards.</span><button onClick={() => navigate("create")}>Create {mode}<ArrowUpRight size={14} /></button></div>}
+                <div className="hf-workspace-heading hf-workspace-heading-compact"><div className="hf-workspace-controls"><button className="hf-subtle-button" onClick={() => navigate("library")}><Grid2X2 size={14} />View library<ChevronRight size={13} /></button></div></div>
+                <div className="hf-results-region"><ResultsGrid mode={mode} /></div>
+              </>
+            )}
           </div>
         )}
       </main>
-      {view === "create" && <div className="hf-composer"><CommandBar mode={mode} onModeChange={nextMode => navigate("create", nextMode)} /></div>}
+      {view === "create" && mode === "image" && <div className="hf-composer"><CommandBar mode={mode} onModeChange={nextMode => navigate("create", nextMode)} /></div>}
       {dialog && <StudioDialog content={dialog} onClose={() => setDialog(null)} />}
     </div>
   );

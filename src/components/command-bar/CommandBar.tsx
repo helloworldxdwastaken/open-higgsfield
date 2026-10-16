@@ -41,9 +41,10 @@ type FormData = z.infer<typeof schema>;
 interface CommandBarProps {
     mode: "video" | "image";
     onModeChange: (mode: "video" | "image") => void;
+    variant?: "fixed" | "panel";
 }
 
-export function CommandBar({ mode, onModeChange }: CommandBarProps) {
+export function CommandBar({ mode, onModeChange, variant = "fixed" }: CommandBarProps) {
     const t = useTranslations("studio");
     const tErrors = useTranslations("errors");
     const tCommon = useTranslations("common");
@@ -107,6 +108,12 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
             }
         } catch { /* A blocked/stale browser draft never submits a generation. */ }
     }, [mode, setValue]);
+
+    useEffect(() => {
+        const focus = () => textareaRef.current?.focus();
+        window.addEventListener("highfield:focus-composer", focus);
+        return () => window.removeEventListener("highfield:focus-composer", focus);
+    }, []);
 
     const autoResize = useCallback(() => {
         const el = textareaRef.current;
@@ -521,7 +528,7 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
     };
 
     return (
-        <div className="fixed left-0 right-0 bottom-0 z-20 pointer-events-none" style={{ padding: "16px 20px 20px" }}>
+        <div className={variant === "panel" ? "hf-panel-command" : "fixed left-0 right-0 bottom-0 z-20 pointer-events-none"} style={variant === "panel" ? undefined : { padding: "16px 20px 20px" }}>
             {/* Error toast */}
             <AnimatePresence>
                 {apiError && (
@@ -544,10 +551,11 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
             {/* Composer stage — matches Flask grid */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="pointer-events-auto mx-auto grid gap-3 items-stretch"
-                style={{ width: "min(70rem, 100%)", gridTemplateColumns: "64px minmax(0,1fr)" }}
+                className={variant === "panel" ? "pointer-events-auto flex flex-col gap-3" : "pointer-events-auto mx-auto grid gap-3 items-stretch"}
+                style={variant === "panel" ? undefined : { width: "min(70rem, 100%)", gridTemplateColumns: "64px minmax(0,1fr)" }}
             >
-                {/* Mode rail */}
+                {/* Mode rail (fixed variant only) */}
+                {variant === "fixed" && (
                 <div
                     className="rounded-[20px] p-1.5 border border-white/[.08] flex flex-col gap-1.5"
                     style={{
@@ -584,12 +592,15 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
                             <span>{m === "image" ? tCommon("image") : tCommon("video")}</span>
                         </button>
                     ))}
-                </div>
+                </div>)}
 
                 {/* Composer card */}
                 <div
-                    className="rounded-[28px] border border-white/[.08] flex items-stretch gap-3"
-                    style={{
+                    className={variant === "panel" ? "rounded-[16px] border border-white/[.08] flex flex-col items-stretch gap-3" : "rounded-[28px] border border-white/[.08] flex items-stretch gap-3"}
+                    style={variant === "panel" ? {
+                        background: "rgba(16,18,20,.92)",
+                        padding: "14px",
+                    } : {
                         backdropFilter: "blur(26px)",
                         background: "radial-gradient(circle at 92% 82%, rgba(213,255,71,.07), transparent 18%), linear-gradient(90deg, rgba(12,12,12,.96), rgba(20,20,20,.92) 52%, rgba(24,24,24,.88))",
                         boxShadow: "0 28px 80px rgba(0,0,0,.42)",
@@ -850,8 +861,15 @@ export function CommandBar({ mode, onModeChange }: CommandBarProps) {
                          type="submit"
                          disabled={missingRecipeImages > 0}
                          title={missingRecipeImages > 0 ? "Attach the recipe’s required image references first" : undefined}
-                        className="shrink-0 self-center border-none rounded-[22px] font-bold cursor-pointer active:scale-95 transition-transform"
-                        style={{
+                        className={variant === "panel" ? "shrink-0 w-full border-none rounded-[12px] font-bold cursor-pointer active:scale-95 transition-transform" : "shrink-0 self-center border-none rounded-[22px] font-bold cursor-pointer active:scale-95 transition-transform"}
+                        style={variant === "panel" ? {
+                            minHeight: 46,
+                            background: "linear-gradient(180deg, #d1fe17, #bcf122)",
+                            color: "#0b1118",
+                            fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                            fontSize: 15,
+                            letterSpacing: "-0.02em",
+                        } : {
                             width: 146,
                             minHeight: 84,
                             background: "linear-gradient(180deg, #d1fe17, #bcf122)",

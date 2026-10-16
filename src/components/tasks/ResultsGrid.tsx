@@ -2,8 +2,9 @@
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Inbox, Download, Trash2, Clock, AlertCircle, Volume2, VolumeX } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { Download, Trash2, Clock, AlertCircle, Upload, Volume2, VolumeX } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import Link from "next/link";
 import { IMAGE_CAPABILITIES } from "@/models/capabilities/image";
 import { VIDEO_CAPABILITIES } from "@/models/capabilities/video";
 import { Lightbox } from "@/components/tasks/Lightbox";
@@ -85,8 +86,9 @@ export function ResultsGrid({ mode }: ResultsGridProps) {
     const tasks = mode === "video" ? videoTasks : imageTasks;
     const isEmpty = tasks.length === 0;
 
+    const locale = useLocale();
     return (
-        <div className="h-full overflow-y-auto" style={{ paddingBottom: 296 }}>
+        <div className="h-full overflow-y-auto" style={{ paddingBottom: mode === "video" ? 24 : 296 }}>
             {isEmpty ? (
                 <div className="flex flex-col items-center justify-center h-full gap-4 text-center px-4">
                     {mode === "image" ? (
@@ -96,15 +98,22 @@ export function ResultsGrid({ mode }: ResultsGridProps) {
                             <p className="hf-empty-sub">Describe a scene, character, mood, or style — and watch it come to life</p>
                         </>
                     ) : (
-                        <>
-                            <div className="flex h-16 w-16 items-center justify-center rounded-2xl" style={{ background: "rgba(255,255,255,.04)" }}>
-                                <Inbox className="h-8 w-8" style={{ color: "rgba(244,247,251,.24)" }} />
+                        <div className="hf-video-empty">
+                            <h2>Make videos in one click</h2>
+                            <p>Camera control, framing and VFX presets — or use the general preset for manual control.</p>
+                            <div className="hf-video-empty-cards">
+                                <button type="button" className="hf-video-empty-card" onClick={() => window.dispatchEvent(new CustomEvent("highfield:focus-composer"))}>
+                                    <span className="hf-video-empty-icon"><Upload size={20} /></span>
+                                    <strong>Add image</strong>
+                                    <span>Upload, paste or generate an image to start your animation</span>
+                                </button>
+                                <Link className="hf-video-empty-card" href={`/${locale}/presets`}>
+                                    <span className="hf-video-empty-icon">✦</span>
+                                    <strong>Choose preset</strong>
+                                    <span>Pick a preset to control your image movement</span>
+                                </Link>
                             </div>
-                            <div>
-                                <p className="text-sm font-medium" style={{ color: "rgba(244,247,251,.44)" }}>{t("empty")}</p>
-                                <p className="text-xs mt-1" style={{ color: "rgba(244,247,251,.28)" }}>Generate a video to see results here</p>
-                            </div>
-                        </>
+                        </div>
                     )}
                 </div>
             ) : (
