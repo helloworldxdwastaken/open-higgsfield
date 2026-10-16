@@ -1,10 +1,14 @@
 # Highfield · open-higgsfield
 
+Start with [PROJECT_GUIDE.md](PROJECT_GUIDE.md) for the consolidated architecture, file/API map, feature status, run/test/deploy guidance and documentation index. Local machine-specific context is in the deliberately ignored `PROJECT_MEMORY.md`; private evidence stays under `.runtime/project-notes/`, never public Git.
+
+The current frontend target is Higgsfield **UI and UX matching from the accepted public-screen references**, while retaining the existing AI providers, backends and owner data. The existing interface is not yet a complete 1:1 match; see [the UI/UX reference and interaction checklist](docs/uiux-reference.md). Previews and unfinished flows must be labeled honestly.
+
 Highfield is a self-hosted creative studio fork of [TechBeme/open-higgsfield](https://github.com/TechBeme/open-higgsfield). The repository keeps its original name and MIT license. The interface is independently authored from public product references; this project is unaffiliated with Higgsfield.
 
 We are extending this foundation into our own complete creative platform: studios, prompts/skills, MCP/API, UI controls, accounts, teams and administration. The [38-module build ledger](docs/highfield-scope.json) tracks the full scope; a complete project workflow connects shot planning, media generation, Voicebox narration and export as one delivery stage. See the [product direction, reusable sources and current implementation status](docs/highfield.md).
 
-Official MIT-licensed skills, CLI installer/docs and Cursor plugin sources are pinned as optional `third_party/` submodules. Fetch them with `git submodule update --init --recursive`; they remain source references pending adaptation, not automatically executable Highfield workflows. [Source provenance](docs/upstream-sources.json) records licenses and exact commits.
+Official MIT-licensed skills, CLI installer/docs and Cursor plugin sources are pinned as optional `third_party/` submodules. Fetch them with `git submodule update --init --recursive`. Eight published prompt contracts are adapted and 86 Markdown documents are locally readable/exportable; original CLI workflows and scripts are not automatically executable. [Source provenance](docs/upstream-sources.json) records licenses and exact commits.
 
 The original 40 curated image/video models remain available. This fork adds a Highfield Explore interface, private provider settings, optional Higgsfield Genjutsu/Cinema adapters, OpenRouter media discovery, local engine discovery, a local shot planner, and a read-only MCP endpoint. Cloud providers require your own credentials and may charge for generation. Model access and pricing come from each provider.
 
