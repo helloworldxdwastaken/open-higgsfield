@@ -22,12 +22,17 @@ async function inspectSourceVideo(buffer: Buffer) {
         if (!Number.isFinite(duration) || duration < 4 || Number(stream?.width || 0) * Number(stream?.height || 0) < 409600) throw new Error("ERR_GENJUTSU_SOURCE_REQUIRES_4_SECONDS_AND_409600_PIXELS");
     } finally { await rm(dir, { recursive: true, force: true }); }
 }
-async function inputBytes(url: string): Promise<Buffer> {
-    const uploaded = url.match(/^\/api\/uploaded\/([a-zA-Z0-9_.-]+)$/);
-    if (uploaded) return readLocalUpload(uploaded[1]);
+async function inputBytes(url: string, userId?: string): Promise<Buffer> {
+    const uploaded = url.match(/^\/api\/uploaded\/([a-f0-9]{16,64})\/([a-zA-Z0-9_.-]+)$/i);
+    if (uploaded) {
+        if (userId && uploaded[1] !== userId) throw new Error("ERR_UPLOAD_ACCESS_DENIED");
+        return readLocalUpload(uploaded[2], uploaded[1]);
+    }
+    const legacyUpload = url.match(/^\/api\/uploaded\/([a-zA-Z0-9_.-]+)$/);
+    if (legacyUpload) return readLocalUpload(legacyUpload[1]);
     const download = url.match(/^\/api\/download\/([a-zA-Z0-9_-]+)(?:\?(.*))?$/);
     if (download) {
-        await initStore(); const task = getTask(download[1]);
+        await initStore(); const task = getTask(download[1], userId);
         if (!task) throw new Error("ERR_REFERENCE_NOT_FOUND");
         const index = Number(new URLSearchParams(download[2] || "").get("index") || 0);
         if (!Number.isInteger(index) || index < 0) throw new Error("ERR_REFERENCE_NOT_FOUND");
@@ -37,17 +42,17 @@ async function inputBytes(url: string): Promise<Buffer> {
     }
     return Buffer.from((await downloadPublicMedia(url)).data);
 }
-export async function higgsfieldInput(file: File | null, url: string, kind: "image" | "video" | "audio"): Promise<string> {
+export async function higgsfieldInput(file: File | null, url: string, kind: "image" | "video" | "audio", userId?: string): Promise<string> {
     if (kind === "audio") throw new Error("ERR_UNSUPPORTED_REFERENCE_KIND");
     if (file && file.size > 256 * 1024 * 1024) throw new Error("ERR_UPLOAD_SIZE_LIMIT");
-    let bytes = file?.size ? Buffer.from(await file.arrayBuffer()) : await inputBytes(url);
+    let bytes = file?.size ? Buffer.from(await file.arrayBuffer()) : await inputBytes(url, userId);
     if (!bytes.length || bytes.length > 256 * 1024 * 1024) throw new Error("ERR_UPLOAD_SIZE_LIMIT");
     if (kind === "image") {
         bytes = await sharp(bytes, { limitInputPixels: 40000000 }).jpeg({ quality: 92 }).toBuffer();
-        await saveInputLocally(bytes, ".jpg");
+        await saveInputLocally(bytes, ".jpg", userId);
         return uploadHiggsfieldMedia(bytes, "image/jpeg");
     }
     await inspectSourceVideo(bytes);
-    await saveInputLocally(bytes, ".mp4");
+    await saveInputLocally(bytes, ".mp4", userId);
     return uploadHiggsfieldMedia(bytes, "video/mp4");
 }

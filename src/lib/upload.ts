@@ -2,6 +2,7 @@ import { refreshConnections } from "@/lib/connections";
 import fs from "fs/promises";
 import path from "path";
 import { STORAGE_ROOT, userDownloadsDir, userUploadsDir, USER_STORAGE_ID_PATTERN } from "@/lib/storage-paths";
+import { withUserStorageQuota } from "@/lib/user-storage";
 
 function shortId() {
     return Math.random().toString(36).slice(2, 16);
@@ -72,8 +73,10 @@ export async function saveInputLocally(buffer: Buffer, ext: string, userId?: str
     const scoped = userId && USER_STORAGE_ID_PATTERN.test(userId);
     const directory = scoped ? userUploadsDir(userId!) : UPLOADS_DIR;
     await fs.mkdir(directory, { recursive: true });
-    await fs.writeFile(path.join(directory, filename), buffer, { mode: 0o600 });
-    return scoped ? `/api/uploaded/${userId}/${filename}` : `/api/uploaded/${filename}`;
+    return withUserStorageQuota(userId!, buffer.byteLength, async () => {
+        await fs.writeFile(path.join(directory, filename), buffer, { mode: 0o600 });
+        return scoped ? `/api/uploaded/${userId}/${filename}` : `/api/uploaded/${filename}`;
+    });
 }
 
 export async function readLocalUpload(filename: string, userId?: string): Promise<Buffer> {
@@ -90,8 +93,10 @@ export async function saveDownload(taskId: string, suffix: string, buffer: Buffe
         : isVideo ? DOWNLOADS_VIDEOS_DIR : DOWNLOADS_IMAGES_DIR;
     const filePath = path.join(dir, `${taskId}${suffix}`);
     await fs.mkdir(dir, { recursive: true });
-    await fs.writeFile(filePath, buffer);
-    return filePath;
+    return withUserStorageQuota(userId!, buffer.byteLength, async () => {
+        await fs.writeFile(filePath, buffer);
+        return filePath;
+    });
 }
 
 export async function readDownload(filePath: string): Promise<Buffer> {

@@ -87,7 +87,7 @@ async function generateVideo(req: NextRequest, userId: string) {
         if (slot.required && !inputs.length) throw new Error("ERR_REQUIRED_REFERENCE_MISSING");
         if (inputs.length > (slot.multiple ? 8 : 1)) throw new Error("ERR_TOO_MANY_REFERENCE_INPUTS");
         for (const [index, input] of inputs.entries()) {
-          const resolved = await higgsfieldInput(input.file, input.url, slot.kind);
+          const resolved = await higgsfieldInput(input.file, input.url, slot.kind, userId);
           if (slot.kind === "video") nativeVideo = resolved;
           else nativeImages[`${slot.id}_${index}`] = resolved;
         }

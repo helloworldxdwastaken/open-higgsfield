@@ -1,9 +1,7 @@
 import { randomBytes, scrypt as scryptCb, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import { getSql } from "@/lib/database-client";
-import { readdir, stat } from "fs/promises";
-import path from "path";
-import { userStorageRoot } from "@/lib/storage-paths";
+import { getUserStorageUsage } from "@/lib/user-storage";
 
 const scrypt = promisify(scryptCb) as (p: string | Buffer, s: string | Buffer, k: number) => Promise<Buffer>;
 
@@ -19,20 +17,6 @@ export type PlatformUser = {
 
 export type SessionUser = PlatformUser & { sessionId: string };
 
-
-async function directorySize(directory: string): Promise<number> {
-    let entries;
-    try { entries = await readdir(directory, { withFileTypes: true }); }
-    catch { return 0; }
-    const sizes = await Promise.all(entries.map(async entry => {
-        if (entry.isSymbolicLink()) return 0;
-        const entryPath = path.join(directory, entry.name);
-        if (entry.isFile()) return (await stat(entryPath)).size;
-        if (entry.isDirectory()) return directorySize(entryPath);
-        return 0;
-    }));
-    return sizes.reduce((total, size) => total + size, 0);
-}
 
 async function ensureSchema(): Promise<void> {
     if (!schemaPromise) {
@@ -119,7 +103,7 @@ export async function listUsers(): Promise<Array<PlatformUser & { storage_used: 
         ORDER BY u.created_at ASC`;
     return Promise.all((rows as PlatformUser[]).map(async row => ({
         ...row,
-        storage_used: await directorySize(userStorageRoot(row.id)),
+        storage_used: await getUserStorageUsage(row.id),
     })));
 }
 
