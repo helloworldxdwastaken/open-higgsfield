@@ -567,9 +567,9 @@
     {
       "id": "HF-021",
       "key": "audio",
-      "title": "Voicebox audio, speech and voice workflows",
+      "title": "VoiceLab audio, speech and voice workflows",
       "in_scope": true,
-      "state": "separate_service",
+      "state": "partial",
       "phase": 2,
       "depends_on": [
         "HF-003",
@@ -577,17 +577,17 @@
         "HF-007"
       ],
       "current_evidence": [
-        "HIGHFIELD_AUDIO_URL links the separate Voicebox studio; local Kokoro synthesis verified"
+        "Integrated same-session VoiceLab tab: per-user voices/history/media with an isolated engine adapter; see docs/audio.md. Live engine release evidence is tracked separately."
       ],
       "deliverables": [
-        "Workspace-scoped Voicebox voice/profile and narration asset integration",
+        "Workspace-scoped engine voice/profile and narration asset integration",
         "Speech, cloning, transcription, dubbing and effects for installed engines",
         "Music/SFX and native video audio through compatible additional engines"
       ],
       "acceptance": [
         "Record actual installed/loaded engine availability; download is not inference verification",
         "Generated narration becomes a versioned project asset with measured duration",
-        "Identity, audio access and job ownership are preserved across the Highfield/Voicebox boundary"
+        "Identity, audio access and job ownership are preserved across the Highfield/engine boundary"
       ]
     },
     {

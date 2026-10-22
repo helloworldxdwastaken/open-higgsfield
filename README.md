@@ -12,7 +12,7 @@ Official MIT-licensed skills, CLI installer/docs and Cursor plugin sources are p
 
 The original 40 curated image/video models remain available. This fork adds a Highfield Explore interface, private provider settings, optional Higgsfield Genjutsu/Cinema adapters, OpenRouter media discovery, local engine discovery, a local shot planner, and a read-only MCP endpoint. Cloud providers require your own credentials and may charge for generation. Model access and pricing come from each provider.
 
-Use **Connections** for credentials, **Engines** for live provider discovery, and **Director** for shot planning with LM Studio or Ollama. A local planning model does not supply a video generation engine. Audio can link to a separately hosted Voicebox instance using `HIGHFIELD_AUDIO_URL`.
+Use **Connections** for credentials, **Engines** for live provider discovery, and **Director** for shot planning with LM Studio or Ollama. A local planning model does not supply a video generation engine. VoiceLab provides integrated speech, cloning and transcription behind the same Highfield session; see [docs/audio.md](docs/audio.md).
 
 Run Node 22 or later, `npm ci`, copy `.env.example` to `.env.local`, set `STUDIO_PUBLIC_ORIGIN` to your exact browser origin, then `npm run dev`. Before production, run `npm run lint`, `npm run typecheck`, and `npm run build`. Bind the server to loopback and place it behind owner authentication; the application is a shared owner workspace and does not include public multi-user authentication. Keep runtime storage and private settings outside public source control.
 

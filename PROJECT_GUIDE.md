@@ -67,6 +67,7 @@ UI work should reuse those services rather than invent parallel provider APIs. P
 | Locally cached public example images | `/api/presets/preview/:id` |
 | Six read-only tools | `/api/mcp` |
 | Minimal runtime health | `/api/health` |
+| Integrated local audio | `/api/audio`, `/api/audio/:id`, `/api/audio/:id/media` — same Highfield session |
 
 These routes currently share one owner workspace behind deployment authentication. Account/workspace isolation must be implemented and tested before enabling independent users. A local URL, opaque ID or hidden button is not authorization.
 
@@ -74,7 +75,7 @@ These routes currently share one owner workspace behind deployment authenticatio
 
 - 40 original curated models remain, with optional native Higgsfield endpoints and dynamic OpenRouter discovery. Discovery/configuration is not proof of entitlement, credits or output quality.
 - LM Studio/Ollama provide local planning. The Draw Things image adapter requires an available local service. A text/vision model is not automatically a video engine.
-- Voicebox is a separate audio foundation; a navigation link does not merge its data or identity with the studio.
+- The integrated Audio tab (VoiceLab) uses the existing Highfield session and per-user audio stores behind a replaceable engine adapter; see `docs/audio.md` for the engine contract.
 - 14 prompt recipes, 6 original Cinema starters, 8 licensed skill texts/86 documents and 45 effect drafts have distinct provenance and completion states.
 - The 45 effect drafts are independently authored prompt interpretations. Their public example pictures are not original preset engine source or the owner's generated results.
 - Native Genjutsu uses its documented Higgsfield endpoint and provider credentials. Public UI matching does not change that backend dependency.

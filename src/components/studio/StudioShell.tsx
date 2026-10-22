@@ -40,7 +40,7 @@ const workflows: Workflow[] = [
   { id: "supercomputer", title: "Supercomputer", eyebrow: "HEAVY VIDEO TASKS", description: "Run demanding generative video work.", art: "katana", feature: "supercomputer_generation", status: "Video workflow", detail: "Open the video composer with the Supercomputer model selected in the admin console. The selected provider handles the video job and stored output remains user-isolated." },
 ];
 
-export function StudioShell({ initialMode = "image", initialView = "explore", audioStudioUrl }: { initialMode?: MediaMode; initialView?: StudioView; audioStudioUrl?: string }) {
+export function StudioShell({ initialMode = "image", initialView = "explore" }: { initialMode?: MediaMode; initialView?: StudioView }) {
    const locale = useLocale();
    const router = useRouter();
   const [mode, setMode] = useState<MediaMode>(initialMode);
@@ -125,9 +125,6 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
     });
   }
 
-  function openAudio() {
-    setDialog({ title: "Your audio studio", eyebrow: "AUDIO", status: "Audio studio not configured", description: "Connect your Voicebox deployment to open voice creation, profiles and narration from Highfield. The server's HIGHFIELD_AUDIO_URL setting supplies this destination.", actionLabel: "View connections", actionHref: `${prefix}/connections` });
-  }
 
   function openApi() {
     setDialog({ title: "Build on your studio", eyebrow: "MCP / API", status: "Read-only MCP · REST generation routes", description: "Highfield exposes model discovery and job history through its authenticated read-only MCP endpoint. Generation uses the existing REST routes; MCP generation tools are not available yet. Director can plan shots with your configured local planning model.", endpoint: `${window.location.origin}/api/mcp`, actionLabel: "Explore providers", actionHref: `${prefix}/providers`, links: [{ label: "Image model catalog", href: "/api/image-models" }, { label: "Video model catalog", href: "/api/models" }, { label: "Director", href: `${prefix}/director` }] });
@@ -136,7 +133,7 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
   return (
     <div className={`hf-shell hf-view-${view}`}>
       <a className="hf-skip" href="#highfield-workspace">Skip to workspace</a>
-      <TopBar active={view === "explore" ? "explore" : mode === "image" ? "image" : "video"} audioStudioUrl={audioStudioUrl} onMcpClick={openApi} onAudioClick={openAudio} />
+      <TopBar active={view === "explore" ? "explore" : mode === "image" ? "image" : "video"} onMcpClick={openApi} />
       <main id="highfield-workspace" className="hf-main" tabIndex={-1}>
         {view === "explore" ? (
           <div className="hf-explore">
@@ -154,7 +151,7 @@ export function StudioShell({ initialMode = "image", initialView = "explore", au
               <button className="hf-feature-card" onClick={() => openWorkflow(workflows[7])}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Video size={17} /></span><span className="hf-feature-card-badge">Model</span></div><strong>Influencer</strong><span>Create social-ready character video with the admin-selected model.</span></button>
               <button className="hf-feature-card" onClick={() => openWorkflow(workflows[8])}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Video size={17} /></span><span className="hf-feature-card-badge">Model</span></div><strong>Supercomputer</strong><span>Run demanding generative video work with the admin-selected model.</span></button>
               <button className="hf-feature-card" onClick={openApi}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Code2 size={17} /></span></div><strong>MCP for local agents</strong><span>Read-only tools for model discovery and job history, exposed at /api/mcp.</span></button>
-              <button className="hf-feature-card" onClick={openAudio}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><AudioLines size={17} /></span></div><strong>Voicebox audio</strong><span>Voice creation, profiles and narration through your connected audio studio.</span></button>
+              <button className="hf-feature-card" onClick={() => { router.push(`${prefix}/audio`); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><AudioLines size={17} /></span></div><strong>VoiceLab audio</strong><span>Create speech, clone voices and transcribe recordings in the integrated audio workspace.</span></button>
               <button className="hf-feature-card" onClick={() => { router.push(`${prefix}/presets`); }}><div className="hf-feature-card-top"><span className="hf-feature-card-icon"><Sparkles size={17} /></span><span className="hf-feature-card-badge">New</span></div><strong>Visual Effects</strong><span>45 effect drafts with curated prompt interpretations and public examples.</span></button>
             </section>
             <aside className="hf-provider-banner"><div className="hf-banner-symbol"><Sparkles size={24} /></div><div><strong>A studio that works your way.</strong><p>Connect direct providers, discover models and keep your generations in one library.</p></div><Link href={`${prefix}/connections`}>Manage connections<ArrowUpRight size={15} /></Link></aside>

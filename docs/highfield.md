@@ -6,13 +6,13 @@ Build Highfield as our own creative platform by extending this fork. The existin
 
 The owner has confirmed the full platform scope: studios and workflows, the complete interface and button behavior, prompts and skills, MCP/API/CLI, accounts, teams, usage and administration. The scope is broader than a single project workflow. The [build ledger](highfield-scope.json) tracks 38 modules, their present coverage, dependencies, deliverables and acceptance criteria. Entries in that ledger are requirements, not claims of feature parity.
 
-Highfield will own its projects, shot plans, reference assets, presets, account/workspace data and workflow orchestration. Each workflow will use a compatible, explicitly selected local engine or cloud provider. The native Higgsfield API remains an optional connection; our independently implemented workflows must also work with other compatible engines. Voicebox remains the audio foundation, with voice assets to be integrated into Highfield projects.
+Highfield will own its projects, shot plans, reference assets, presets, account/workspace data and workflow orchestration. Each workflow will use a compatible, explicitly selected local engine or cloud provider. The native Higgsfield API remains an optional connection; our independently implemented workflows must also work with other compatible engines. VoiceLab is the integrated audio workspace, with voice assets to be integrated into Highfield projects.
 
 The next development stage is one complete project workflow:
 
 1. Save a project and turn its brief into an editable shot plan using Director.
 2. Generate its shots through the existing provider and job system, retaining references, progress and revisions.
-3. Add Voicebox narration and assemble an export from the completed media.
+3. Add VoiceLab narration and assemble an export from the completed media.
 
 That complete workflow is one delivery stage within the full scope. Cinema, Genjutsu-style motion transfer/object swap/restyling, Katana, effects, marketing/Ads, identities, audio/lipsync, Layers, video editing, Canvas, 3D, agents, specialized studios, sharing and integrations remain tracked until independently implemented and verified. All workflows should share the same authorized project, asset and job services.
 
@@ -62,7 +62,7 @@ The Director page calls `POST /api/director` with `{engine: "ollama" | "lm-studi
 
 LM Studio supplies text/vision/planning through documented compatible endpoints. Ollama supplies planning for compatible models; its macOS image generation is experimental and is not automatically enabled by selecting a chat model. Draw Things' HTTP service supports image generation when explicitly enabled. General Draw Things video requires its separate CLI/gRPC worker and is not represented as an invented HTTP endpoint.
 
-Voicebox is a separate audio studio. Set `HIGHFIELD_AUDIO_URL` to its authenticated URL to show the Audio link. Linking a studio does not merge their private voice/profile stores.
+The integrated [VoiceLab workspace](audio.md) opens under the same Highfield origin and session. It reaches a private speech engine through the allowlisted adapter in `src/lib/audio-service.ts`; the engine contract is documented in `docs/audio.md`. The adapter maps each user's own profiles, jobs and media; legacy engine data is not automatically imported.
 
 ## MCP client connection
 
